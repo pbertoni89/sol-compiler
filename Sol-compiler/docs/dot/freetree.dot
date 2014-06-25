@@ -1,0 +1,47 @@
+digraph a{
+	rankdir="TB";
+	subgraph {
+		rank="same"
+		root;
+		root2;
+		root3;
+	}
+	subgraph {
+		rank="same"
+		A;
+		B;
+		C;
+		D;
+		E;
+	}
+	subgraph {
+		rank="same"
+		alpha;
+		beta;
+		gamma;
+		delta;
+		epsilon;
+	}
+	subgraph {
+		rank="same"
+		n1;
+		n2;
+		n3;
+		n4;
+	}
+	
+	root -> root2 -> root3;
+	root -> A;
+	root3 -> D;
+	A -> B -> C
+	D -> E;
+	B -> alpha;
+	C -> gamma;
+	D -> delta;
+	alpha -> beta;
+	delta -> epsilon;
+	gamma -> n1;
+	n1 -> n2 -> n3 -> n4;
+	
+	
+}

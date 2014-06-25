@@ -21,4 +21,6 @@
  */
 char* initString(char* _string);
 
+
+
 #endif /* UTILS_H_ */

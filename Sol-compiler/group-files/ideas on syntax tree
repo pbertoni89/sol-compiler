@@ -1,0 +1,10 @@
+This file explain the ideas behind the SOL abstract syntax tree
+
+1) The syntax tree is EBNF like. This has been decided to reduce the size of the tree and so to increase performance. This
+	means that:
+	
+	1) for the construction of "syntax.y" file we have used lamperti's file "bnf.pdf". 
+	2) xxx-list must not be inside the abstract syntax tree: so if in the tree there is a node called (for example) stat-list THIS IS AN ERROR
+	3) xxx-opt must always be constructed, even if they have no children
+	
+	 

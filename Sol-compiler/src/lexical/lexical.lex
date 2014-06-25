@@ -17,7 +17,7 @@ letter		[a-zA-Z]
 digit		[0-9]
 id			{letter}({letter}|{digit})*
 
-charconst		'{letter}|{digit}'
+charconst		\'({letter}|{digit})\'
 intconst		(\+|-)?{digit}+
 realconst		(\+|-)?{digit}+"."{digit}+
 strconst		\"[^\"\n]*\"

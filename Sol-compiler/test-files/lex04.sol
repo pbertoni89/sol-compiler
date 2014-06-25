@@ -1,0 +1,2 @@
+s : string;
+ s = "alpha";
