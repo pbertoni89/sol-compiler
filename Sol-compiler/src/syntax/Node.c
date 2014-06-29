@@ -7,7 +7,8 @@ PNode initNode(NodeType type){
 		exit(EXIT_FAILURE);
 	}
 	result->type=type;
-	result->value=0;
+	//set to 0 all the union struct
+	memset(&result->value,0,sizeof(NodeValue));
 	result->child=NULL;
 	result->brother=NULL;
 	return result;
@@ -32,31 +33,31 @@ void freeNode(PNode node){
 }
 
 PNode initIntNode(int value){
-	PNode result=initNode(T_INT);
+	PNode result=initNode(T_INTCONST);
 	result->value.intValue=value;
 	return result;
 }
 
 PNode initRealNode(float value){
-	PNode result=initNode(T_REAL);
+	PNode result=initNode(T_REALCONST);
 	result->value.realValue=value;
 	return result;
 }
 
 PNode initStrNode(char* value){
-	PNode result=initNode(T_STR);
+	PNode result=initNode(T_STRCONST);
 	result->value.strValue=value;
 	return result;
 }
 
 PNode initBoolNode(bool value){
-	PNode result=initNode(T_BOOL);
+	PNode result=initNode(T_BOOLCONST);
 	result->value.boolValue=value;
 	return result;
 }
 
 PNode initCharNode(char value){
-	PNode result=initNode(T_CHAR);
+	PNode result=initNode(T_CHARCONST);
 	result->value.charValue=value;
 	return result;
 }
@@ -65,4 +66,72 @@ PNode initIDNode(char* value){
 	PNode result=initNode(T_ID);
 	result->value.strValue=value;
 	return result;
+}
+
+bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool removedotfile){
+	char buffer[__PARSER_TOOLS_MAX_FILENAME_LENGTH];
+	sprintf(buffer,"grp/%s.dot",filename);
+	FILE* f=fopen(buffer,"w");
+	if (f==NULL){
+		fprintf(stderr,"parser-tools.c:buildSyntaxTreeGraph:can't create file grp/%s.dot!\n",filename);
+		return false;
+	}
+	fprintf(f,"digraph %s {\n",filename);
+	parserToolComputeSyntaxNodeRecursive(f,root,0,1);
+	fprintf(f,"}");
+	fflush(f);
+	fclose(f);
+	if (jpgimage==true){
+		char command[3*__PARSER_TOOLS_MAX_FILENAME_LENGTH];
+		sprintf(command,"dot -Tjpg grp/%s.dot -o grp/%s.jpg",filename,filename);
+		int result=system(command);
+		if (result!=0){
+			fprintf(stderr,"parser-tools.c:buidlSyntaxTreeGraph:can't create jpg image %s.jpg!\n",filename);
+			return false;
+		}
+	}
+	if (removedotfile==true){
+		char command[10+__PARSER_TOOLS_MAX_FILENAME_LENGTH];
+		sprintf(command,"rm grp/%s.dot",filename);
+		int result=system(command);
+		if (result!=0){
+			fprintf(stderr,"parser-tools.c:buildSyntaxTreeGraph:can't remove %s.dot!\n",filename);
+			return false;
+		}
+	}
+	return true;
+}
+
+int parserToolComputeSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int childnumber){
+	int childNodeUsed=0;
+	int brotherNodeUsed=0;
+	if (pnode->brother!=NULL && childnumber==1){
+		//the node has at least a brother; since every brother has the same dot.rank a subgraph needs to be created
+		//this node is the first child. So we need to write the "open subgraph" token
+		fprintf(f,"{\n");
+		fprintf(f,"rank=same;\n");
+	}
+	//---------- NODE CREATION -------------
+	fprintf(f,"n%02d",nodenumber);
+	fprintf(f,"[label=\"");
+	printNodeType(f,pnode->type);
+	fprintf(f,"\"");
+	if (isTerminal(pnode->type)){
+		fprintf(f," style=\"filled\" fillcolor=\"yellow\"");
+	}
+	fprintf(f,"];\n");
+	//--------------END NODE CREATION ------------------
+
+	if (pnode->brother!=NULL){
+		fprintf(f,"n%02d -> n%02d [color=blue];\n",nodenumber,nodenumber+1);
+		brotherNodeUsed=parserToolComputeSyntaxNodeRecursive(f,pnode->brother,nodenumber+1,childnumber+1);
+	}
+	if (pnode->brother==NULL && childnumber!=1){//this node has no further brother; however it is the last children a unknown parent has. So we have to close the subgraph
+		fprintf(f,"}\n");
+	}
+	if (pnode->child!=NULL){
+		fprintf(f,"n%02d -> n%02d [color=red];\n",nodenumber,nodenumber+brotherNodeUsed+1);
+		childNodeUsed=parserToolComputeSyntaxNodeRecursive(f,pnode->child,nodenumber+brotherNodeUsed+1,1);//pnode->child is the first child, so the brothernumebr is set to 1
+	}
+	return childNodeUsed+brotherNodeUsed+1;
 }

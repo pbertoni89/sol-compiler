@@ -1,5 +1,5 @@
 /**
- *	\file lex-definitions.h
+ *	\file token-definitions.h
  *	\brief Includes a list of lexical token definitions
  *
  *	this file include a list of defines directives. You use them to communicate information betweeen the lexical module and the syntax one.
@@ -33,8 +33,8 @@
  * 	\author koldar
  *	\version 1.0
  */
-#ifndef LEX_DEFINITIONS_H_
-#define LEX_DEFINITIONS_H_
+#ifndef TOKEN_DEFINITIONS_H_
+#define TOKEN_DEFINITIONS_H_
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // @@@@@@@@@@@@@@@@@@@@@@@ ASCII SYMBOLS TOKENS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -59,10 +59,10 @@
 // @@@@@@@@@@@@@@@@@@@@@@@@ NON ASCII SYMBOL TOKENS @@@@@@@@@@@@@@@@@@@@@@@@@@
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-#define TK_EQUAL				309
-#define TK_NOTEQUAL				310
-#define TK_GE					312
-#define TK_LE					314
+#define TK_EQUAL				301
+#define TK_NOTEQUAL				302
+#define TK_GE					303
+#define TK_LE					304
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@ RESERVED WORDS TOKENS @@@@@@@@@@@@@@@@@@@@@@@@@
@@ -119,4 +119,4 @@
 #define TK_ID					506
 
 
-#endif /* LEX_DEFINITIONS_H_ */
+#endif /* TOKEN_DEFINITIONS_H_ */

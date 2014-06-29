@@ -9,8 +9,19 @@
 #ifndef NODETYPE_H_
 #define NODETYPE_H_
 
+#include <stdbool.h>
+#include <stdio.h>
+
+/* To get all the terminal/non terminal definition in this file
+ * cat NodeType.h | sed '/^\s\s*\([A-Z_0-9][A-Z_0-9]*\)/!d' | sed 's/\s\s*\|,//g'
+ *
+ * //cat NodeType.h | sed '/^\s\s*\([A-Z_0-9][A-Z_0-9]*\)/!d' | sed 's/\s\s*\|,//g' | sed 's/\(.*\)/\1\1/g'
+ */
+
+
 typedef enum {
-	//Non terminal
+
+	// ############### Non terminal ################
 	NT_PROGRAM,
 	NT_FUNC_DECL,
 	NT_DECL_LIST_OPT,
@@ -33,6 +44,8 @@ typedef enum {
 	NT_STAT,
 	NT_ASSIGN_STAT,
 	NT_LEFT_HAND_SIDE,
+	NT_FIELDING,
+	NT_INDEXING,
 	NT_IF_STAT,
 	NT_ELSIF_STAT_LIST_OPT,
 	NT_ELSIF_STAT_LIST,
@@ -53,8 +66,8 @@ typedef enum {
 	NT_LOW_TERM_LIST,
 	NT_LOW_BIN_OP,
 	NT_LOW_TERM,
+	NT_HIGH_BIN_OP,
 	NT_FACTOR_LIST,
-	NT_,
 	NT_FACTOR,
 	NT_UNARY_OP,
 	NT_ATOMIC_CONST,
@@ -63,21 +76,80 @@ typedef enum {
 	NT_EXPR_LIST,
 	NT_VECTOR_CONSTRUCTION,
 	NT_FUNC_CALL,
+	NT_EXPR_LIST_OPT,
 	NT_COND_EXPR,
 	NT_ELSIF_EXPR_LIST_OPT,
 	NT_BUILT_IN_CALL,
+	NT_TOINT_CALL,
+	NT_TOREAL_CALL,
 	NT_DYNAMIC_INPUT,
 	NT_DYNAMIC_OUTPUT,
 
-	//Terminal
-	T_INT,
-	T_STR,
-	T_REAL,
-	T_CHAR,
-	T_BOOL,
+	// ############# Terminal #################
+
+	//const are used for nodes which represents a constant
+	T_INTCONST,
+	T_STRCONST,
+	T_REALCONST,
+	T_CHARCONST,
+	T_BOOLCONST,
+	//type are used in nodes representing a variable/constant type
+	T_INTTYPE,
+	T_STRTYPE,
+	T_REALTYPE,
+	T_CHARTYPE,
+	T_BOOLTYPE,
+	//operations: a series of operations that can be use inside and expression
+	T_AND,
+	T_OR,
+	T_NOT,
+	T_PLUS,
+	T_MINUS,
+	T_UMINUS,
+	T_TIMES,
+	T_DIVISION,
+	T_IN,
+	T_EQ,
+	T_NE,
+	T_GT,
+	T_GE,
+	T_LT,
+	T_LE,
+	//other
 	T_ID
 
 } NodeType;
 
+/**\brief Prints a string representation of this object to to file f.
+ *
+ *
+ * The returned string contains no carriage return.
+ *
+ * \pre
+ *  \li f open on write mode
+ *  \li f non NULL
+ *
+ * @param f the file to write on the object
+ * @param nodetype the NodeType to write
+ */
+void printNodeType(FILE* f,NodeType nodetype);
+
+/**\brief TRUE if this node type represents a terminal
+ *
+ * \verbinclude TerminalList
+ *
+ * @param nodetype the NodeType to check
+ * @return TRUE if the nodetype represents a terminal, false otherwise
+ */
+bool isTerminal(NodeType nodetype);
+
+/**\brief TTUE if this node type represents a non terminal
+ *
+ * \verbinclude TerminalList
+ *
+ * @param nodetype the NodeType to check
+ * @return TRUE if the nodetype represents a non terminal, false otherwise
+ */
+bool isNonTerminal(NodeType nodetype);
 
 #endif /* NODETYPE_H_ */

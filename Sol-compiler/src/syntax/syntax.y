@@ -1,260 +1,280 @@
 %{
-#include "lex-definitions.h"
 #include "Node.h"
 #include <stdlib.h>
 #define YYSTYPE PNode
-extern char* yytext;
 extern LexVal lexVal;
-extern FILE* yyinput;
-Pnode root=NULL;
+extern int yylineno;
+extern char* yytext;
+PNode root=NULL;
+
+/*Added to improve code readability*/
+#define INITIDNODE() initIDNode(lexVal.strValue)
+
+/**\brief function to throw if any syntax error is detected
+ *
+ * @param s the string representing to error
+ */
+void yyerror(const char *s);
 
 %}
 
-%token TK_OPENPARENTHESIS TK_CLOSEPARENTHESIS TK_COLON TK_SEMICOLON TK_COMMA TK_OPENBRACKET TK_CLOSEBRACKET TK_ASSIGN TK_GT TK_LT TK_PLUS TK_MINUS TK_TIMES TK_DIVISION 
-%token TK_EQUAL TK_NOTEQUAL TK_GE TK_LE 
-%token TK_FUNC TK_CHAR TK_INT TK_REAL TK_STRING TK_BOOL TK_STRUCT TK_VECTOR TK_OF TK_TYPE TK_VAR TK_CONST TK_BEGIN TK_END TK_IF TK_THEN TK_ELSIF TK_ELSE TK_ENDIF TK_WHILE TK_DO TK_ENDWHILE TK_FOR TK_TO TK_ENDFOR TK_FOREACH TK_IN TK_ENDFOREACH TK_RETURN TK_READ TK_WRITE TK_AND TK_OR TK_NOT TK_TOINT TK_TOREAL TK_RD TK_WR 
+%token TK_EQUAL TK_NOTEQUAL TK_GE TK_LE
+%token TK_FUNC TK_CHAR TK_INT TK_REAL TK_STRING TK_BOOL TK_STRUCT TK_VECTOR TK_OF TK_TYPE TK_VAR TK_CONST TK_BEGIN TK_END TK_IF TK_THEN TK_ELSIF TK_ELSE TK_ENDIF TK_WHILE TK_DO TK_ENDWHILE TK_FOR TK_TO TK_ENDFOR TK_FOREACH TK_IN TK_ENDFOREACH TK_RETURN TK_READ TK_WRITE TK_AND TK_OR TK_NOT TK_TOINT TK_TOREAL TK_RD TK_WR
 %token TK_CHARCONST TK_INTCONST TK_REALCONST TK_STRCONST TK_BOOLCONST TK_ID
 
 %error-verbose 
+%start program
 
 %%
 
 	/* ################### DERIVATION RULES ###################### */
 
-program					:	func-decl {root=$$; $$=initNode(NT_PROGRAM); $$->child=$1;}
+program					:	func_decl { root=$$; $$=initNode(NT_PROGRAM); $$->child=$1;}
 						;
 						
-func-decl				:	TK_FUNC TK_ID {$$=initIDNode(lexval.strValue);} '(' decl-list-opt ')' ':' domain type-sect-opt var-sect-opt const-sect-opt func-list-opt func-body
+func_decl				:	TK_FUNC TK_ID { $$=INITIDNODE();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body
 							{$$=initNode(NT_FUNC_DECL); $$->child=$3; $3->brother=$5; $5->brother=$8; $8->brother=$9; $9->brother=$10; $10->brother=$11; $11->brother=$12; $12->brother=$13;}
 						;
 						
-decl-list-opt			:	decl-list {$$=initNode(NT_DECL_LIST_OPT); $$->child=$1;} 
+decl_list_opt			:	decl_list {$$=initNode(NT_DECL_LIST_OPT); $$->child=initNode(NT_DECL_LIST); $$->child->child=$1;} 
 						|	{$$=initNode(NT_DECL_LIST_OPT);}
 						;
 
-decl-list				:	decl ';' decl-list {$$=$1; $1->brother=$3;}
-						|	decl ';' {$$=$1;}
+	/*Does not create a node*/
+decl_list				:	decl ';' decl_list {  $$=$1; $$->brother=$3;}
+						|	decl ';' { $$=$1;}
+		/*TODO here you should put "| decl": in this way protypes like progTest(a:int; b:string):int are accepted, not only prototypes like progTest(a:int; b:string;):int*/
 						;
 						
-decl					:	id-list ':' domain ';' {$$=initNode(NT_DECL); $$->child=$1; }
+decl					:	id_list ':' domain { $$=initNode(NT_DECL); $$->child=initNode(NT_ID_LIST); $$->child->child=$1; $$->child->brother=$3;}
 						;
 						
-id-list					:	TK_ID ',' id-list
-						|	TK_ID
+	/*Does not create a note*/
+id_list					:	TK_ID {$$=INITIDNODE();} ',' id_list {$$=$2; $$->brother=$4;}
+						|	TK_ID {$$=INITIDNODE(); }
 						;
 						
-domain					:	atomic-domain
-						|	struct-domain
-						|	vector-domain
-						|	TK_ID
+domain					:	atomic_domain {$$=initNode(NT_DOMAIN);}
+						|	struct_domain {$$=initNode(NT_DOMAIN);}
+						|	vector_domain {$$=initNode(NT_DOMAIN);}
+						|	TK_ID {$$=INITIDNODE();}
 						;
 						
-atomic-domain			:	TK_CHAR
-						|	TK_INT
-						|	TK_REAL
-						|	TK_STRING
-						|	TK_BOOL
+atomic_domain			:	TK_CHAR {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_CHARTYPE);}
+						|	TK_INT {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_INTTYPE);}
+						|	TK_REAL {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_REALTYPE);}
+						|	TK_STRING {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_STRTYPE);}
+						|	TK_BOOL {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_BOOLTYPE);}
 						;
 						
-struct-domain			:	TK_STRUCT '(' decl-list ')'
+struct_domain			:	TK_STRUCT '(' decl_list ')' { $$=initNode(NT_STRUCT_DOMAIN); $$->child=initNode(NT_DECL_LIST); $$->child->child=$3;}
 						;
 						
-vector-domain			:	TK_VECTOR '[' TK_INTCONST ']' TK_OF domain
+vector_domain			:	TK_VECTOR '[' TK_INTCONST {$$=initIntNode(lexVal.intValue);} ']' TK_OF domain {$$=initNode(NT_VECTOR_DOMAIN); $$->child=$4; $4->brother=$7;}
 						;
 						
-type-sect-opt			:	TK_TYPE decl-list
-						|
+type_sect_opt			:	TK_TYPE decl_list {$$=initNode(NT_TYPE_SECT_OPT); $$->child=initNode(NT_DECL_LIST); $$->child->child=$2;}
+						|	{$$=initNode(NT_TYPE_SECT_OPT);}
 						;
 						
-var-sect-opt			:	TK_VAR decl-list
-						|
+var_sect_opt			:	TK_VAR decl_list {$$=initNode(NT_VAR_SECT_OPT); $$->child=initNode(NT_DECL_LIST); $$->child->child=$2;}
+						|	{$$=initNode(NT_VAR_SECT_OPT);}
 						;
 						
-const-sect-opt			:	TK_CONST const-decl-list
-						|
+const_sect_opt			:	TK_CONST const_decl_list {$$=initNode(NT_CONST_SECT_OPT); $$->child=initNode(NT_CONST_DECL_LIST); $$->child->child=$2;}
+						|	{$$=initNode(NT_CONST_SECT_OPT);}
+						;
+	/*does not create a node*/
+const_decl_list			:	const_decl const_decl_list {$$=$1; $$->brother=$2;}
+						|	const_decl	{$$=$1;}
+						;
+						
+const_decl				:	decl '=' expr ';' {$$=initNode(NT_CONST_DECL); $$->child=$1; $1->brother=$3;}
+						;
+						
+func_list_opt			:	func_list {$$=initNode(NT_FUNC_LIST_OPT); $$->child=initNode(NT_FUNC_LIST); $$->child->child=$1;}
+						|	{$$=initNode(NT_FUNC_LIST_OPT);}
+						;
+	/*Does not create a node*/
+func_list				:	func_decl func_list {$$=$1; $$->brother=$2;}
+						|	func_decl {$$=$1;}
+						;
+						
+func_body				:	TK_BEGIN TK_ID {$$=INITIDNODE();} stat_list TK_END TK_ID {$$=INITIDNODE();} {$$=initNode(NT_FUNC_BODY); $$->child=$3; $3->brother=initNode(NT_STAT_LIST); $3->brother->child=$4; $3->brother->brother=$7;}
+						;
+	/*Does not create a node*/
+stat_list				:	stat ';' stat_list {$$=$1; $$->brother=$3;}
+						|	stat ';' {$$=$1;}
+						;
+						
+stat					:	assign_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	if_stat {$$=initNode(NT_STAT); $$->child=$1;} 
+						|	while_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	for_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	foreach_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	return_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	read_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						|	write_stat {$$=initNode(NT_STAT); $$->child=$1;}
+						;
+						
+assign_stat				:	left_hand_side '=' expr {$$=initNode(NT_ASSIGN_STAT); $$->child=$1; $1->brother=$3;}
+						;
+						
+left_hand_side			:	TK_ID {$$=initNode(NT_LEFT_HAND_SIDE); $$->child=INITIDNODE(); }
+						|	fielding {$$=initNode(NT_LEFT_HAND_SIDE); $$->child=$1;}
+						|	indexing {$$=initNode(NT_LEFT_HAND_SIDE); $$->child=$1;}
+						;
+						
+fielding				:	left_hand_side '.' TK_ID {$$=initNode(NT_FIELDING); $$->child=$1; $1->brother=INITIDNODE();}
 						;
 
-const-decl-list			:	const-decl const-decl-list
-						|	const-decl
+indexing				:	left_hand_side '[' expr ']' {$$=initNode(NT_INDEXING); $$->child=$1; $1->brother=$3;}
 						;
 						
-const-decl				:	decl '=' expr ';'
+if_stat					:	TK_IF expr TK_THEN stat_list elsif_stat_list_opt else_stat_opt TK_ENDIF
+							{$$=initNode(NT_IF_STAT); $$->child=$2; $2->brother=initNode(NT_STAT_LIST); $2->brother->child=$4; $2->brother->brother=initNode(NT_ELSIF_STAT_LIST_OPT); $2->brother->brother->child=$5; $2->brother->brother->brother=$6;}
 						;
-						
-func-list-opt			:	func-list
-						|
+	/*Does not create a node*/
+elsif_stat_list_opt		:	TK_ELSIF expr TK_THEN stat_list elsif_stat_list_opt {$$=$1; $$->brother=initNode(NT_STAT_LIST); $$->brother->child=$4; $$->brother->brother=$5;}
+						|	{$$=NULL;}
 						;
 
-func-list				:	func-decl func-list
-						|	func-decl
-						;
-						
-func-body				:	TK_BEGIN TK_ID stat-list TK_END TK_ID
-						;
-						
-stat-list				:	stat ';' stat-list
-						|	stat ';'
-						;
-						
-stat					:	assign-stat
-						|	if-stat
-						|	while-stat
-						|	for-stat
-						|	foreach-stat
-						|	return-stat
-						|	read-stat
-						|	write-stat
-						;
-						
-assign-stat				:	left-hand-side '=' expr
-						;
-						
-left-hand-side			:	TK_ID
-						|	fielding
-						|	indexing
-						;
-						
-fielding				:	left-hand-side '.' TK_ID
+else_stat_opt			:	TK_ELSE stat_list {$$=initNode(NT_ELSE_STAT_OPT); $$->child=$2;}
+						|	{$$=initNode(NT_ELSE_STAT_OPT);}
 						;
 
-indexing				:	left-hand-side '[' expr ']'
+while_stat				:	TK_WHILE expr TK_DO stat_list TK_ENDWHILE
+							{$$=initNode(NT_WHILE_STAT); $$->child=$2; $2->brother=initNode(NT_STAT_LIST); $2->brother->child=$4;}
 						;
 						
-if-stat					:	TK_IF expr TK_THEN stat-list elsif-stat-list-opt else-stat-opt TK_ENDIF
+for_stat				:	TK_FOR TK_ID {$$=INITIDNODE();} '=' expr TK_TO expr TK_DO stat_list TK_ENDFOR
+							{$$=initNode(NT_FOR_STAT); $$->child=$3; $3->brother=$5; $5->brother=$7; $7->brother=initNode(NT_STAT_LIST); $7->brother->child=$9;}
 						;
 						
-elsif-stat-list-opt		:	TK_ELSIF expr TK_THEN stat-list elsif-stat-list-opt
-						|
+foreach_stat			:	TK_FOREACH TK_ID {$$=INITIDNODE();} TK_IN expr TK_DO stat_list TK_ENDFOREACH
+							{$$=initNode(NT_FOREACH_STAT); $$->child=$3; $3->brother=$5; $5->brother=initNode(NT_STAT_LIST); $5->brother->child=$7;}
+						;
+						
+return_stat				:	TK_RETURN expr {$$=initNode(NT_RETURN_STAT); $$->child=$2;}
+						;
+						
+read_stat				:	TK_READ specifier_opt TK_ID {$$=initNode(NT_READ_STAT); $$->child=$2; $2->brother=INITIDNODE();}
+						;
+						
+specifier_opt			:	'[' expr ']' {$$=initNode(NT_SPECIFIER_OPT); $$->child=$2;}
+						|	{$$=initNode(NT_SPECIFIER_OPT);}
+						;
+						
+write_stat				:	TK_WRITE specifier_opt expr {$$=initNode(NT_WRITE_STAT); $$->child=$2; $2->brother=$3;}
+						;
+						
+expr					:	expr bool_op bool_term {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	bool_term {$$=initNode(NT_EXPR); $$->child=$1;}
+						;
+						
+bool_op					:	TK_AND {$$=initNode(NT_BOOL_OP); $$->value.intValue=T_AND;}
+						|	TK_OR {$$=initNode(NT_BOOL_OP); $$->value.intValue=T_OR;}
+						;
+						
+bool_term				:	rel_term rel_op rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1;}
+						;
+						
+rel_op					:	TK_EQUAL {$$=initNode(NT_REL_OP); $$->value.intValue=T_EQ;}
+						|	TK_NOTEQUAL {$$=initNode(NT_REL_OP); $$->value.intValue=T_NE;}
+						|	'>' {$$=initNode(NT_REL_OP); $$->value.intValue=T_GT;}
+						|	TK_GE {$$=initNode(NT_REL_OP); $$->value.intValue=T_GE;}
+						|	'<' {$$=initNode(NT_REL_OP); $$->value.intValue=T_LT;}
+						|	TK_LE {$$=initNode(NT_REL_OP); $$->value.intValue=T_LE;}
+						|	TK_IN {$$=initNode(NT_REL_OP); $$->value.intValue=T_IN;}
+						;
+						
+rel_term				:	rel_term  low_bin_op low_term {$$=initNode(NT_REL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	low_term {$$=initNode(NT_REL_TERM);}
+						;
+						
+low_bin_op				:	'+' {$$=initNode(NT_LOW_BIN_OP); $$->value.intValue=T_PLUS;}
+						|	'-' {$$=initNode(NT_LOW_BIN_OP); $$->value.intValue=T_MINUS;}
+						;
+						
+low_term				:	low_term high_bin_op factor {$$=initNode(NT_LOW_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	factor {$$=initNode(NT_LOW_TERM);}
+						;
+						
+high_bin_op				:	'*' {$$=initNode(NT_HIGH_BIN_OP); $$->value.intValue=T_TIMES;}
+						|	'/' {$$=initNode(NT_HIGH_BIN_OP); $$->value.intValue=T_DIVISION;}
+						;
+						
+factor					:	unary_op factor {$$=initNode(NT_FACTOR); $$->child=$1; $1->brother=$2;}
+						|	'(' expr ')' {$$=initNode(NT_FACTOR); $$->child=$2;}
+						|	left_hand_side {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	atomic_const {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	instance_construction {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	func_call {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	cond_expr {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	built_in_call {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	dynamic_input {$$=initNode(NT_FACTOR); $$->child=$1;}
+						;
+						
+unary_op				:	'-' {$$=initNode(NT_UNARY_OP); $$->value.intValue=T_UMINUS;}
+						|	TK_NOT {$$=initNode(NT_UNARY_OP); $$->value.intValue=T_NOT;}
+						|	dynamic_output {$$=initNode(NT_UNARY_OP); $$->child=$1;}
+						;
+						
+atomic_const			:	TK_CHARCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initCharNode(lexVal.charValue);}
+						|	TK_INTCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initIntNode(lexVal.intValue);}
+						|	TK_REALCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initRealNode(lexVal.realValue);}
+						|	TK_STRCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initStrNode(lexVal.strValue);}
+						|	TK_BOOLCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initBoolNode(lexVal.boolValue);}
+						;
+						
+instance_construction	:	struct_construction {$$=initNode(NT_INSTANCE_CONSTRUCTION); $$->child=$1;}
+						|	vector_construction {$$=initNode(NT_INSTANCE_CONSTRUCTION); $$->child=$1;}
+						;
+						
+struct_construction		:	TK_STRUCT '(' expr_list ')' {$$=initNode(NT_STRUCT_CONSTRUCTION); $$->child=initNode(NT_EXPR_LIST); $$->child->child=$3;}
+						;
+	/*Does not create a node*/						
+expr_list				:	expr ',' expr_list {$$=$1; $$->brother=$3;}
+						|	expr {$$=$1;}
+						;
+						
+vector_construction		:	TK_VECTOR '(' expr_list ')' {$$=initNode(NT_VECTOR_CONSTRUCTION); $$->child=initNode(NT_EXPR_LIST); $$->child->child=$3;}
+						;
+						
+func_call				:	TK_ID {$$=INITIDNODE();} '(' expr_list_opt ')' {$$=initNode(NT_FUNC_CALL); $$->child=$2; $2->brother=$4;}
 						;
 
-else-stat-opt			:	TK_ELSE stat-list
-						|
+expr_list_opt			:	expr_list {$$=initNode(NT_EXPR_LIST_OPT); $$->child=initNode(NT_EXPR_LIST); $$->child->child=$1;}
+						|	{$$=initNode(NT_EXPR_LIST_OPT);}
+						;
+						
+cond_expr				:	TK_IF expr TK_THEN expr elsif_expr_list_opt TK_ELSE expr TK_ENDIF
+							{$$=initNode(NT_COND_EXPR); $$->child=$2; $2->brother=$4; $4->brother=initNode(NT_ELSIF_EXPR_LIST_OPT); $4->brother->child=$5; $4->brother->brother=$7;}
+						;
+	/*Does not create a node*/
+elsif_expr_list_opt		:	TK_ELSIF expr TK_THEN expr elsif_expr_list_opt {$$=$2; $2->brother=$4; $4->brother=$5;}
+						|	{$$=NULL;}
+						;
+						
+built_in_call			:	toint_call {$$=initNode(NT_BUILT_IN_CALL); $$->child=$1;}
+						|	toreal_call {$$=initNode(NT_BUILT_IN_CALL); $$->child=$1;}
 						;
 
-while-stat				:	TK_WHILE expr TK_DO stat-list TK_ENDWHILE
-						;
-						
-for-stat				:	TK_FOR TK_ID '=' expr TK_TO expr TK_DO stat-list TK_ENDFOR
-						;
-						
-foreach-stat			:	TK_FOREACH TK_ID TK_IN expr TK_DO stat-list TK_ENDFOREACH
-						;
-						
-return-stat				:	TK_RETURN expr
-						;
-						
-read-stat				:	TK_READ specifier-opt TK_ID
-						;
-						
-specifier-opt			:	'[' expr ']'
-						|
-						;
-						
-write-stat				:	TK_WRITE specifier-opt expr
-						;
-						
-expr					:	expr bool-op bool-term
-						|	bool-term
-						;
-						
-bool-op					:	TK_AND
-						|	TK_OR
-						;
-						
-bool-term				:	rel-term rel-op rel-term
-						|	rel-term
-						;
-						
-rel-op					:	TK_EQUAL
-						|	TK_NOTEQUAL
-						|	TK_GT
-						|	TK_GE
-						|	TK_LT
-						|	TK_LE
-						|	TK_IN
-						;
-						
-rel-term				:	rel-term  low-bin-op low-term
-						|	low-term
-						;
-						
-low-bin-op				:	'+'
-						|	'-'
-						;
-						
-low-term				:	low-term high-bin-op factor
-						|	factor
-						;
-						
-high-bin-op				:	'*'
-						|	'/'
-						;
-						
-factor					:	unary-op factor
-						|	'(' expr ')'
-						|	left-hand-side
-						|	atomic-const
-						|	instance-construction
-						|	func-call
-						|	cond-expr
-						|	built-in-call
-						|	dynamic-input
-						;
-						
-unary-op				:	'-'
-						|	TK_NOT
-						|	dynamic-output
-						;
-						
-atomic-const			:	TK_CHARCONST
-						|	TK_INTCONST
-						|	TK_REALCONST
-						|	TK_STRCONST
-						|	TK_BOOLCONST
-						;
-						
-instance-construction	:	struct-construction
-						|	vector-construction
-						;
-						
-struct-construction		:	TK_STRUCT '(' expr-list ')'
-						;
-						
-expr-list				:	expr ',' expr-list
-						|	expr
-						;
-						
-vector-construction		:	TK_VECTOR '(' expr-list ')'
-						;
-						
-func-call				:	TK_ID '(' expr-list-opt ')'
+toint_call				:	TK_TOINT '(' expr ')' {$$=initNode(NT_TOINT_CALL); $$->child=$3;}
 						;
 
-expr-list-opt			:	expr-list
-						|
+toreal_call				:	TK_TOREAL '(' expr ')' {$$=initNode(NT_TOREAL_CALL); $$->child=$3;}
 						;
 						
-cond-expr				:	TK_IF expr TK_THEN expr elsif-expr-list-opt TK_ELSE expr TK_ENDIF
-						;
-
-elsif-expr-list-opt		:	TK_ELSIF expr TK_THEN expr elsif-expr-list-opt
-						|
+dynamic_input			:	TK_RD specifier_opt domain {$$=initNode(NT_DYNAMIC_INPUT); $$->child=$2; $2->brother=$3;}
 						;
 						
-built-in-call			:	toint-call
-						|	toreal-call
-						;
-
-toint-call				:	TK_TOINT '(' expr ')'
-						;
-
-toreal-call				:	TK_TOREAL '(' expr ')'
-						;
-						
-dynamic-input			:	TK_RD specifier-opt domain
-						;
-						
-dynamic-output			:	TK_WR specifier-opt
+dynamic_output			:	TK_WR specifier_opt {$$=initNode(NT_DYNAMIC_OUTPUT); $$->child=$2;}
 						;
 
 %%
+
+void yyerror(const char *s){
+	fprintf (stderr, "line %d: %s at \"%s\"\n", yylineno, s,yytext);
+}

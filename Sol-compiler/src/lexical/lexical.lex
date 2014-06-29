@@ -1,13 +1,16 @@
 %{
-	#include "lex-definitions.h"
+	#include "token-definitions.h"
 	#include "LexVal.h"
 	#include "utils.h"
 	/*represents the token meaning (is a char constant or a comma?)*/
-	LexVal lexval;
+	LexVal lexVal;
+	
 %}
 
 	/*Disable the default behaviour of flex: when it reads EOF normally it restart reading the input file. By adding this ilne, this behaviour is disabled*/
 %option noyywrap
+	/*Tells flex to generate a lexical analyzer that stores the line number of the token inside the variable "yylineno".*/
+%option yylineno
 
 	/*######### REGEX DEFINITIONS #############*/
 
@@ -30,24 +33,24 @@ boolconst		true|false
 	/* @@@@@@@@@@ SUGARS @@@@@@@@@@@@@@ */
 
 {spacing}	;
-"("			{return TK_OPENPARENTHESIS;}
-")"			{return TK_CLOSEPARENTHESIS;}
-":"			{return TK_COLON;}
-";"			{return TK_SEMICOLON;}
-","			{return TK_COMMA;}
-"["			{return TK_OPENBRACKET;}
-"]"			{return TK_CLOSEBRACKET;}
-"="			{return TK_ASSIGN;}
+"("			{return yytext[0];}
+")"			{return yytext[0];}
+":"			{return yytext[0];}
+";"			{return yytext[0];}
+","			{return yytext[0];}
+"["			{return yytext[0];}
+"]"			{return yytext[0];}
+"="			{return yytext[0];}
 "=="		{return TK_EQUAL;}
 "!="		{return TK_NOTEQUAL;}
-">"			{return TK_GT;}
+">"			{return yytext[0];}
 ">="		{return TK_GE;}
-"<"			{return TK_LT;}
+"<"			{return yytext[0];}
 "<="		{return TK_LE;}
-"+"			{return TK_PLUS;}
-"-"			{return TK_MINUS;}
-"*"			{return TK_TIMES;}
-"/"			{return TK_DIVISION;}
+"+"			{return yytext[0];}
+"-"			{return yytext[0];}
+"*"			{return yytext[0];}
+"/"			{return yytext[0];}
 
 	/* @@@@@@@@@ RESERVED WORDS @@@@@@@@@@@@@@ */
 
@@ -91,14 +94,14 @@ wr			{return TK_WR;}
 
 	/* @@@@@@@@@@@@@ CONSTANTS @@@@@@@@@@@@@ */
 
-{charconst}	{lexval.charValue=yytext[0]; return TK_CHARCONST;}
-{intconst}	{lexval.intValue=atoi(yytext); return TK_INTCONST;}
-{realconst}	{lexval.realValue=atof(yytext); return TK_REALCONST;}
-{strconst}	{lexval.strValue=initString(yytext); return TK_STRCONST;}
-{boolconst}	{lexval.boolValue=(yytext[0]=='t'?1:0); return TK_BOOLCONST;}
+{charconst}	{lexVal.charValue=yytext[0]; return TK_CHARCONST;}
+{intconst}	{lexVal.intValue=atoi(yytext); return TK_INTCONST;}
+{realconst}	{lexVal.realValue=atof(yytext); return TK_REALCONST;}
+{strconst}	{lexVal.strValue=initString(yytext); return TK_STRCONST;}
+{boolconst}	{lexVal.boolValue=(yytext[0]=='t'?1:0); return TK_BOOLCONST;}
 
 	/* @@@@@@@@@@@@@@ OTHER @@@@@@@@@@@@@@@@@ */
 
-{id}		{lexval.strValue=initString(yytext); return TK_ID;}
+{id}		{lexVal.strValue=initString(yytext); return TK_ID;}
 
 %%
