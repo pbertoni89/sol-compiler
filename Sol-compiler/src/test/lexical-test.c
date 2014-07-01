@@ -1,6 +1,6 @@
 /**
  *	\file lexical-test.c
- *	\brief TODO complete the documentation of lexical-test.c
+ *	\brief file contaning the test relative to the lexical analysis.
  *
  * 	\date Jun 21, 2014
  * 	\author koldar

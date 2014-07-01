@@ -14,21 +14,28 @@ PNode initNode(NodeType type){
 	return result;
 }
 
-//TODO testing
-void freeTree(PNode rootNode){
+void freeSyntaxTree(PNode rootNode){
 	//free child
 	if (rootNode->child!=NULL){
-		freeTree(rootNode->child);
+		freeSyntaxTree(rootNode->child);
 	}
 	//free first brother
 	if (rootNode->brother!=NULL){
-		freeTree(rootNode->brother);
+		freeSyntaxTree(rootNode->brother);
 	}
 	//free actual node
 	freeNode(rootNode);
 }
 
 void freeNode(PNode node){
+	if (node->type==T_STRCONST || node->type==T_ID){
+		//we have to free the string attached to the node
+		free(node->value.strValue);
+	}
+	node->type=0;
+	memset(&node->value,0,sizeof(NodeValue));
+	node->child=NULL;
+	node->brother=NULL;
 	free(node);
 }
 
@@ -115,6 +122,18 @@ int parserToolComputeSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int 
 	fprintf(f,"n%02d",nodenumber);
 	fprintf(f,"[label=\"");
 	printNodeType(f,pnode->type);
+	if (isTerminal(pnode->type)){
+		fprintf(f,"\\n");
+		switch (pnode->type){
+		case T_BOOLCONST: fprintf(f,"%s",pnode->value.boolValue==1?"true":"false"); break;
+		case T_CHARCONST: fprintf(f,"%c",pnode->value.charValue); break;
+		case T_INTCONST: fprintf(f,"%d",pnode->value.intValue); break;
+		case T_REALCONST: fprintf(f,"%f",pnode->value.realValue); break;
+		case T_STRCONST: fprintf(f,"%s",pnode->value.strValue); break;
+		case T_ID: fprintf(f,"%s", pnode->value.strValue); break;
+		default: break;
+		}
+	}
 	fprintf(f,"\"");
 	if (isTerminal(pnode->type)){
 		fprintf(f," style=\"filled\" fillcolor=\"yellow\"");

@@ -21,6 +21,19 @@
  */
 char* initString(char* _string);
 
-
+/**\brief create a permanent copy of _string inside the memory and return the pointer to it
+ *
+ * The function cut off the first and the last character of the string, assuming that
+ * they are \" character. This is why this function is perfect for build string constants.
+ *
+ * \pre
+ *  \li last character is \"
+ * \post
+ *  \li stirng allocated in memory without first and last character.
+ *
+ * @param _string the string that will be copied inside the memory
+ * @return the pointer to the newly created string in the memory
+ */
+char* initQuotedString(char* _string);
 
 #endif /* UTILS_H_ */

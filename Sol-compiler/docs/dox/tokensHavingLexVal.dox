@@ -1,0 +1,7 @@
+The lexical tokens with a meaningful value of the global variable lexVal are:
+-> TK_CHARCONST;
+-> TK_INTCONST;
+-> TK_REALCONST;
+-> TK_STRCONST;
+-> TK_BOOLCONST;
+-> TK_ID;

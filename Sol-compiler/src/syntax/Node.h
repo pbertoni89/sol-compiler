@@ -2,6 +2,18 @@
  *	\file Node.h
  *	\brief holds information about a syntax tree node.
  *
+ * Nodes owns 4 properties:
+ * \li type;
+ * \li value;
+ * \li first child;
+ * \li right brother;
+ *
+ * The type indicate a number representing what the nodes is (and ID, a STAT_LIST or a PLUS).
+ * Optionally some nodes might have a value: for example an ID owns also a string representing the
+ * actual id while a STAT_LIST does not have a value.
+ *
+ * \verbinclude nodesHavingValue.dox
+ *
  * 	\date Jun 22, 2014
  * 	\author koldar
  *	\version 1.0
@@ -28,9 +40,14 @@ typedef LexVal NodeValue;
  *
  */
 typedef struct Node{
-	///\brief The type of the node. Can be "non terminal" or "terminal"
+	///\brief The type of the node. Can be "non terminal (starting with NT_)" or "terminal" (starting with T_)
 	NodeType type;
-	///\brief indicates the optional value attached to the node
+	/**\brief indicates the optional value attached to the node.
+	 *
+	 * Only some NodeType has a meaningful value; the others have this field set to all zeros.
+	 *
+	 * \verbinclude nodesHavingValue.dox
+	 */
 	NodeValue value;
 	///\brief indicates the first child of the node in the syntax tree
 	struct Node* child;
@@ -46,17 +63,15 @@ typedef Node* PNode;
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
  * \post
  *  \li a new node is in memory;
- *  \li value field is set to 0;
+ *  \li value field is set to all zeros;
  *  \li child field is set to 0;
- *  \li brother field is ser to 0;
+ *  \li brother field is set to 0;
  *
  * @param type the type of the node
  * @return a pointer of the newly created node
@@ -77,7 +92,7 @@ PNode initNode(NodeType type);
  *
  * @param rootNode the start node to delet
  */
-void freeTree(PNode rootNode);
+void freeSyntaxTree(PNode rootNode);
 
 /**\brief free the passed node from the memory
  *
@@ -99,9 +114,7 @@ void freeNode(PNode node);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
@@ -121,9 +134,7 @@ PNode initIntNode(int value);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
@@ -143,9 +154,7 @@ PNode initRealNode(float value);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
@@ -166,9 +175,7 @@ PNode initStrNode(char* value);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
@@ -188,9 +195,7 @@ PNode initBoolNode(bool value);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;
@@ -210,9 +215,7 @@ PNode initCharNode(char value);
  * to the tree.
  *
  * The function is particullary useful to instanciate non terminal syntax node in Yacc:
- * \code
- * 	TODO insert example
- * \endcode
+ * \include initNodeExample.dox
  *
  * \pre
  *  \li enough memory in RAM to instanciate the node;

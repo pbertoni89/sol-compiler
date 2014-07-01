@@ -34,13 +34,13 @@ CC_FILES := $(notdir $(patsubst %.c, %.o, $(foreach dir, $(VPATH), $(wildcard $(
 I_DIRECTIVES := $(addprefix -I ,$(VPATH))
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@ IMPORTANT DEFINITIONS @@@@@@@@@@@@@@@@@@@@@
+# @@@@@@@@@@@@@@@@@@@ FUNCTION DEFINITIONS @@@@@@@@@@@@@@@@@@@@@@
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #phony targets
-.PHONY: all clean check-prebrequisites install uninstall \
-	file-system test \
-	check-prerequisites check-%
+#.PHONY: all clean check-prebrequisites install uninstall \
+#	file-system test \
+#	check-prerequisites check-%
 
 #Function to print on the stdout a target-rule successfully complete.
 #param 1: the name of the rule that has been completed
@@ -70,7 +70,7 @@ clean:
 
 prerequisites-check: check-which check-flex check-$(CC) check-dirname check-mkdir check-rm
 
-optional-requisites-check: optional-check-dot optional-check-doxygen  
+optional-requisites-check: optional-check-dot optional-check-doxygen optional-check-valgrind
 
 install:
 	#TODO

@@ -1,15 +1,82 @@
+
+	/*	########################################################################
+		######################## DECLARATION SECTOR ############################
+		########################################################################*/
+
 %{
+
+/**\file syntax.c
+ * \brief file implementing the LARL SOL parser
+ * 
+ * \warning
+ *	this file is generated automatically by bison, so it is strongly recommended not to make any changes
+ * TODO imporove documentation
+ * \author Koldar
+ * \date Jun 30, 2014
+ * \version 1.0
+ */
 #include "Node.h"
 #include <stdlib.h>
-#define YYSTYPE PNode
-extern LexVal lexVal;
-extern int yylineno;
-extern char* yytext;
-PNode root=NULL;
 
-/*Added to improve code readability*/
+//This declaration are needed to enable the debug mode of bison. To activate the debug mode, hust set the YYDEBUG macro to "1" instead of "0"
+#include <stdio.h>
+#define YYDEBUG 0
+int yydebug=1;
+
+/**\brief The type of the meta variables $$,$1,$2...$n used in the bison file (*.y)
+ */
+#define YYSTYPE PNode
+/**\brief the optional lexical value attached to some lexical token
+ * 
+ * \verbinclude tokensHavingLexVal.dox
+ *
+ * \note This token is borrowed from lexical.c by using the keyword "extern". 
+ *
+ */
+extern LexVal lexVal;
+/**\brief represents the number line of the lexical token just read by yylex() from the source file yyinput.
+ *
+ * \note This token is borrowed from lexical.c by using the keyword "extern".
+ */
+extern int yylineno;
+/**\brief represents the string containing the lexical token just read by yylex() from the source file yyinput.
+ *
+ * For example, if yylex() reads and id called "foo" this variable will point to the string "foo" (while yylex() will return TK_ID).
+ *
+ * \note This token is borrowed from lexical.c by using the keyword "extern".
+ */
+extern char* yytext;
+/**\brief indicates the function which will be invoke on demand to obtain a new lexical token from the source file.
+ *
+ * This function will return a integer representing the lexical token just read. Moreover it update the variables:
+ *	\li yylineno;
+ *	\li optionally lexVal (depends on the token read);
+ *	\li yytext;
+ *
+ * \verbinclude tokensHavingLexVal.dox
+ *
+ * \note This token is borrowed from lexical.c by using the keyword "extern".
+ *
+ */
+extern int yylex();
+/**\brief IMPORTANT the variable pointing to the root of the abstract syntax tree
+ *
+ * The global variable points to the root of the abstract syntax tree representing the source file syntax. NULL
+ * if the source file has at least one syntax error.
+ * 
+ * For example the red node is root.
+ *
+ * \dotfile astExample.dot
+ */
+PNode root=NULL;
+/*\brief macro added to improve code readability
+ * Whenever a new ID node has to be initialize, this macro
+ * create the a new PNode with the value stored inside lexVal.strValue and returns
+ * a pointer to the newly create Node structure.
+ */
 #define INITIDNODE() initIDNode(lexVal.strValue)
 
+//TODO improve documentation
 /**\brief function to throw if any syntax error is detected
  *
  * @param s the string representing to error
@@ -17,6 +84,10 @@ PNode root=NULL;
 void yyerror(const char *s);
 
 %}
+
+	/*	########################################################################
+		############################# TOKEN LIST ###############################
+		########################################################################*/
 
 %token TK_EQUAL TK_NOTEQUAL TK_GE TK_LE
 %token TK_FUNC TK_CHAR TK_INT TK_REAL TK_STRING TK_BOOL TK_STRUCT TK_VECTOR TK_OF TK_TYPE TK_VAR TK_CONST TK_BEGIN TK_END TK_IF TK_THEN TK_ELSIF TK_ELSE TK_ENDIF TK_WHILE TK_DO TK_ENDWHILE TK_FOR TK_TO TK_ENDFOR TK_FOREACH TK_IN TK_ENDFOREACH TK_RETURN TK_READ TK_WRITE TK_AND TK_OR TK_NOT TK_TOINT TK_TOREAL TK_RD TK_WR
@@ -27,9 +98,11 @@ void yyerror(const char *s);
 
 %%
 
-	/* ################### DERIVATION RULES ###################### */
+	/*	########################################################################
+		######################### DERIVATION RULES #############################
+		########################################################################*/
 
-program					:	func_decl { root=$$; $$=initNode(NT_PROGRAM); $$->child=$1;}
+program					:	func_decl { $$=initNode(NT_PROGRAM); root=$$; $$->child=$1;}
 						;
 						
 func_decl				:	TK_FUNC TK_ID { $$=INITIDNODE();} '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body
@@ -54,10 +127,10 @@ id_list					:	TK_ID {$$=INITIDNODE();} ',' id_list {$$=$2; $$->brother=$4;}
 						|	TK_ID {$$=INITIDNODE(); }
 						;
 						
-domain					:	atomic_domain {$$=initNode(NT_DOMAIN);}
-						|	struct_domain {$$=initNode(NT_DOMAIN);}
-						|	vector_domain {$$=initNode(NT_DOMAIN);}
-						|	TK_ID {$$=INITIDNODE();}
+domain					:	atomic_domain {$$=initNode(NT_DOMAIN); $$->child=$1;}
+						|	struct_domain {$$=initNode(NT_DOMAIN); $$->child=$1;}
+						|	vector_domain {$$=initNode(NT_DOMAIN); $$->child=$1;}
+						|	TK_ID {$$=initNode(NT_DOMAIN); $$->child=INITIDNODE();}
 						;
 						
 atomic_domain			:	TK_CHAR {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_CHARTYPE);}
@@ -172,37 +245,37 @@ expr					:	expr bool_op bool_term {$$=initNode(NT_EXPR); $$->child=$1; $1->broth
 						|	bool_term {$$=initNode(NT_EXPR); $$->child=$1;}
 						;
 						
-bool_op					:	TK_AND {$$=initNode(NT_BOOL_OP); $$->value.intValue=T_AND;}
-						|	TK_OR {$$=initNode(NT_BOOL_OP); $$->value.intValue=T_OR;}
+bool_op					:	TK_AND {$$=initNode(NT_BOOL_OP); $$->child=initNode(T_AND);}
+						|	TK_OR {$$=initNode(NT_BOOL_OP); $$->child=initNode(T_OR);}
 						;
 						
 bool_term				:	rel_term rel_op rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
 						|	rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1;}
 						;
 						
-rel_op					:	TK_EQUAL {$$=initNode(NT_REL_OP); $$->value.intValue=T_EQ;}
-						|	TK_NOTEQUAL {$$=initNode(NT_REL_OP); $$->value.intValue=T_NE;}
-						|	'>' {$$=initNode(NT_REL_OP); $$->value.intValue=T_GT;}
-						|	TK_GE {$$=initNode(NT_REL_OP); $$->value.intValue=T_GE;}
-						|	'<' {$$=initNode(NT_REL_OP); $$->value.intValue=T_LT;}
-						|	TK_LE {$$=initNode(NT_REL_OP); $$->value.intValue=T_LE;}
-						|	TK_IN {$$=initNode(NT_REL_OP); $$->value.intValue=T_IN;}
+rel_op					:	TK_EQUAL {$$=initNode(NT_REL_OP); $$->child=initNode(T_EQ);}
+						|	TK_NOTEQUAL {$$=initNode(NT_REL_OP); $$->child=initNode(T_NE);}
+						|	'>' {$$=initNode(NT_REL_OP); $$->child=initNode(T_GT);}
+						|	TK_GE {$$=initNode(NT_REL_OP); $$->child=initNode(T_GE);}
+						|	'<' {$$=initNode(NT_REL_OP); $$->child=initNode(T_LT);}
+						|	TK_LE {$$=initNode(NT_REL_OP); $$->child=initNode(T_LE);}
+						|	TK_IN {$$=initNode(NT_REL_OP); $$->child=initNode(T_IN);}
 						;
 						
 rel_term				:	rel_term  low_bin_op low_term {$$=initNode(NT_REL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
-						|	low_term {$$=initNode(NT_REL_TERM);}
+						|	low_term {$$=initNode(NT_REL_TERM); $$->child=$1;}
 						;
 						
-low_bin_op				:	'+' {$$=initNode(NT_LOW_BIN_OP); $$->value.intValue=T_PLUS;}
-						|	'-' {$$=initNode(NT_LOW_BIN_OP); $$->value.intValue=T_MINUS;}
+low_bin_op				:	'+' {$$=initNode(NT_LOW_BIN_OP); $$->child=initNode(T_PLUS);}
+						|	'-' {$$=initNode(NT_LOW_BIN_OP); $$->child=initNode(T_MINUS);}
 						;
 						
 low_term				:	low_term high_bin_op factor {$$=initNode(NT_LOW_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
-						|	factor {$$=initNode(NT_LOW_TERM);}
+						|	factor {$$=initNode(NT_LOW_TERM); $$->child=$1;}
 						;
 						
-high_bin_op				:	'*' {$$=initNode(NT_HIGH_BIN_OP); $$->value.intValue=T_TIMES;}
-						|	'/' {$$=initNode(NT_HIGH_BIN_OP); $$->value.intValue=T_DIVISION;}
+high_bin_op				:	'*' {$$=initNode(NT_HIGH_BIN_OP); $$->child=initNode(T_TIMES);}
+						|	'/' {$$=initNode(NT_HIGH_BIN_OP); $$->child=initNode(T_DIVISION);}
 						;
 						
 factor					:	unary_op factor {$$=initNode(NT_FACTOR); $$->child=$1; $1->brother=$2;}
@@ -216,8 +289,8 @@ factor					:	unary_op factor {$$=initNode(NT_FACTOR); $$->child=$1; $1->brother=
 						|	dynamic_input {$$=initNode(NT_FACTOR); $$->child=$1;}
 						;
 						
-unary_op				:	'-' {$$=initNode(NT_UNARY_OP); $$->value.intValue=T_UMINUS;}
-						|	TK_NOT {$$=initNode(NT_UNARY_OP); $$->value.intValue=T_NOT;}
+unary_op				:	'-' {$$=initNode(NT_UNARY_OP); $$->child=initNode(T_UMINUS);}
+						|	TK_NOT {$$=initNode(NT_UNARY_OP); $$->child=initNode(T_NOT);}
 						|	dynamic_output {$$=initNode(NT_UNARY_OP); $$->child=$1;}
 						;
 						
@@ -274,6 +347,10 @@ dynamic_output			:	TK_WR specifier_opt {$$=initNode(NT_DYNAMIC_OUTPUT); $$->chil
 						;
 
 %%
+
+	/*	########################################################################
+		######################## AUXILIARY FUNCTIONS ###########################
+		########################################################################*/
 
 void yyerror(const char *s){
 	fprintf (stderr, "line %d: %s at \"%s\"\n", yylineno, s,yytext);

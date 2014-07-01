@@ -1,0 +1,37 @@
+digraph {
+	rankdir="TB";
+	program [label="program\n(AKA root)" style="filled" fillcolor="red"]
+	func_decl;
+	program -> func_decl;
+	subgraph {
+		rank="same";
+		ID [label="ID\n(progTest)"];
+		ID ->
+		decl_list_opt ->
+		domain ->
+		typesect_opt ->
+		var_sect_opt ->
+		const_sect_opt ->
+		funct_list_opt ->
+		func_body;
+	}
+	func_decl -> ID;
+	subgraph {
+		rank="same"
+		t1 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t2 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t3 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t4 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t5 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t6 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+		t7 [label="..." shape="triangle" style="filled" fillcolor="gold1:gray98"];
+	}
+	
+	decl_list_opt -> t1;
+	domain -> t7;
+	typesect_opt -> t2;
+	var_sect_opt -> t3;
+	const_sect_opt -> t4;
+	funct_list_opt -> t5;
+	func_body -> t6;
+}

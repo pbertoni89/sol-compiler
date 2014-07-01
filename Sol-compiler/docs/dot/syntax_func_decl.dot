@@ -1,0 +1,17 @@
+digraph {
+	rankdir="TB";
+	func_decl;
+	subgraph {
+		rank="same";
+		T_ID ->
+		decl_list_opt ->
+		domain ->
+		type_sect_opt ->
+		var_sect_opt ->
+		const_sect_opt ->
+		func_list_opt ->
+		func_body;
+	}
+	
+	func_decl -> T_ID;
+}

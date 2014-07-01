@@ -34,10 +34,10 @@ begin progTest
 	write "Insert 10 positive int numbers";
 	read list;
 	while ( i<MAX  and list[i] > 0) do
-		i=i+1; #LEXER MAXIMAL MUNCH: seen as id,intconst rather tham id,plus,intconst
+		i=i+1;
 	endwhile;
 	if (i!=MAX) then
-		write "Error! Negative number inserted!"
+		write "Error! Negative number inserted!";
 		return -1;
 	endif;
 	

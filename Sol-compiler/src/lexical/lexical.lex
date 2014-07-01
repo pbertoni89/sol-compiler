@@ -4,7 +4,7 @@
 	#include "utils.h"
 	/*represents the token meaning (is a char constant or a comma?)*/
 	LexVal lexVal;
-	
+	//TODO add comments C-like
 %}
 
 	/*Disable the default behaviour of flex: when it reads EOF normally it restart reading the input file. By adding this ilne, this behaviour is disabled*/
@@ -21,8 +21,8 @@ digit		[0-9]
 id			{letter}({letter}|{digit})*
 
 charconst		\'({letter}|{digit})\'
-intconst		(\+|-)?{digit}+
-realconst		(\+|-)?{digit}+"."{digit}+
+intconst		(-)?{digit}+
+realconst		(-)?{digit}+"."{digit}+
 strconst		\"[^\"\n]*\"
 boolconst		true|false
 
@@ -80,6 +80,7 @@ for			{return TK_FOR;}
 to			{return TK_TO;}
 endfor		{return TK_ENDFOR;}
 foreach		{return TK_FOREACH;}
+in			{return TK_IN;}
 endforeach	{return TK_ENDFOREACH;}
 return		{return TK_RETURN;}
 read		{return TK_READ;}
@@ -97,7 +98,7 @@ wr			{return TK_WR;}
 {charconst}	{lexVal.charValue=yytext[0]; return TK_CHARCONST;}
 {intconst}	{lexVal.intValue=atoi(yytext); return TK_INTCONST;}
 {realconst}	{lexVal.realValue=atof(yytext); return TK_REALCONST;}
-{strconst}	{lexVal.strValue=initString(yytext); return TK_STRCONST;}
+{strconst}	{lexVal.strValue=initQuotedString(yytext); return TK_STRCONST;}
 {boolconst}	{lexVal.boolValue=(yytext[0]=='t'?1:0); return TK_BOOLCONST;}
 
 	/* @@@@@@@@@@@@@@ OTHER @@@@@@@@@@@@@@@@@ */

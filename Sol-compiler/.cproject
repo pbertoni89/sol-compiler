@@ -29,7 +29,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.266064379" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1514262126" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.667678817" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.include.paths.639399912" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath"/>
+								<option id="gnu.cpp.compiler.option.include.paths.639399912" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.317642045" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2088039032" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -40,8 +40,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Sol-compiler/src/lexical}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Sol-compiler/src/syntax}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Sol-compiler/src/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Sol-compiler/src/semantic}&quot;"/>
 								</option>
-								<option id="gnu.c.compiler.option.include.files.1070465756" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files" valueType="includeFiles"/>
+								<option id="gnu.c.compiler.option.include.files.1070465756" name="Include files (-include)" superClass="gnu.c.compiler.option.include.files"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1442269036" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.2016851653" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
@@ -52,13 +53,13 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1609242236" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.include.paths.1441851955" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1441851955" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1689313650" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="lexical|src|test" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="lexical|test|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -107,7 +108,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="test|lexical|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="lexical|test|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>

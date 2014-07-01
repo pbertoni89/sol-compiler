@@ -1,0 +1,6 @@
+digraph {
+	rank="TB";
+	program [label="program\n(AKA root)"];
+	func_decl;
+	program -> func_decl;
+}

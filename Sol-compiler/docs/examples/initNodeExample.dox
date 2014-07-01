@@ -1,0 +1,29 @@
+
+#include <stdio.h>
+#include "Node.h"
+#define YYSTYPE PNode
+
+extern int yylex();
+extern int yylineno;
+extern char* yytext;
+extern LexVal lexVal;
+void yyerror(const char *s);
+
+%%
+
+program_example	:	func_decl {$$=initNode(NT_PROGRAM); $$->child=$1;}
+				;
+
+func_decl		:	STRING_CONST_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initStrNode(lexVal.strValue);}
+				|	INT_CONST_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initIntNode(lexVal.intValue);}
+				|	REAL_CONST_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initIntNode(lexVal.realValue);}
+				|	BOOL_CONST_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initIntNode(lexVal.boolValue);}
+				|	CHAR_CONST_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initIntNode(lexVal.charValue);}
+				|	ID_TOKEN {$$=initNode(NT_FUNC_DECL); $$->child=initIDNode(lexVal.strValue);}
+				;
+
+%%
+
+void yyerror(const char *s){
+	fprintf (stderr, "line %d: %s at \"%s\"\n", yylineno, s,yytext);
+}

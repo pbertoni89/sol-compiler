@@ -5,15 +5,11 @@
  *	There a some token inside SOL language that holds useful data. For example
  *	an identifier can't be modelled just by saying to the Syntax module: "this is an identifier (TK_ID)":
  *	the syntax module should also know the identifier string value. LexVal is able to store
- *	this information.There are various token similar to the identifier:
- *	\li identifier;
- *	\li string constant;
- *	\li int constant;
- *	\li real constant;
- *	\li char constant;
- *	\li boolean constant;
+ *	this information.
  *
- *	all these token can't be described only by a number but have to be described also by their value.
+ *	\verbinclude tokensHavingLexVal.dox
+ *
+ *	All those tokens can't be described only by a number but have to be described also by their value.
  *
  * 	\date Jun 20, 2014
  * 	\author koldar

@@ -1,0 +1,9 @@
+Here there is a list of type that has a meaningful value field:
+
+-> T_INTCONST; value: intValue; meaning: the int represented by the intconst;
+-> T_REALCONST; value: realValue; meaning: the real represented by the realconst;
+-> T_BOOLCONST; value: boolValue; meaning: the boolean represented by the boolconst;
+-> T_STRCONST; value: strValue; meaning: the string represented by the strconst;
+-> T_CHARCONST; value: charValue; meaning: the char represented by the charconst;
+-> T_INTCONST; value: intValue; meaning: the int represented by the intconst;
+-> T_ID; value: strValue; meaning: the string representing the id;

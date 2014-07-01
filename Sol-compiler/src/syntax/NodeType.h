@@ -136,16 +136,16 @@ void printNodeType(FILE* f,NodeType nodetype);
 
 /**\brief TRUE if this node type represents a terminal
  *
- * \verbinclude TerminalList
+ * \verbinclude TerminalList.dox
  *
  * @param nodetype the NodeType to check
  * @return TRUE if the nodetype represents a terminal, false otherwise
  */
 bool isTerminal(NodeType nodetype);
 
-/**\brief TTUE if this node type represents a non terminal
+/**\brief TRUE if this node type represents a non terminal
  *
- * \verbinclude TerminalList
+ * \verbinclude TerminalList.dox
  *
  * @param nodetype the NodeType to check
  * @return TRUE if the nodetype represents a non terminal, false otherwise

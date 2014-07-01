@@ -9,4 +9,8 @@ This file explain the ideas behind the SOL abstract syntax tree
 	2) xxx-opt must always be present in the syntax tree
 	3) xxx-list must be a single node. Its children must be all of type xxx. (For example if there is a stat-list its children must be all "stat" nodes.
 	
-	 
+2) some pragmatical rules:
+	- all derivation rules creates a $$=initNode() unless they represents a list. If they represents a list the comment:
+		/*Does not create a node*/
+	  should be present.
+	- The tree is not space performant. To be optimal it should be using precedence table for the operators.
