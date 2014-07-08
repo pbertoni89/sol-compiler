@@ -1,0 +1,23 @@
+digraph {
+	rankdir="TB";
+	atomic_domain1 [label="atomic_domain"];
+	atomic_domain2 [label="atomic_domain"];
+	atomic_domain3 [label="atomic_domain"];
+	atomic_domain4 [label="atomic_domain"];
+	atomic_domain5 [label="atomic_domain"];
+	
+	subgraph {
+		rank="same";
+		T_CHARTYPE;
+		T_INTTYPE;
+		T_REALTYPE;
+		T_STRTYPE;
+		T_BOOLTYPE;
+	}
+	
+	atomic_domain1 -> T_CHARTYPE;
+	atomic_domain2 -> T_INTTYPE;
+	atomic_domain3 -> T_REALTYPE;
+	atomic_domain4 -> T_STRTYPE;
+	atomic_domain5 -> T_BOOLTYPE;
+}

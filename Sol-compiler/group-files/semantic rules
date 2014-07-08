@@ -1,2 +1,348 @@
 This file contains some info about the table production-semantic rules
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ATTRIBUTE GRAMMAR @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+type SCHEMA*
+tmptype SCHEMA* a schema that is being constructed
+names char**
+currentOperation {TYPE_DEFINITION, STRUCT_DEFINITION} TODO try to inser that!
+idlistMeaning enum {TYPE_DEFINITION}: indicates what represents the id_list (ids to be added to the symboltable? ids representing types name?)
+decllistMeaning enum {TYPE_DEFINITION, STRUCT_DEFINITION}: indicates what represents the decl_list (is it a record field list? or a domain list?)
+constructType BOOL TRUE if you want the Schema in "type" to be added in the SchemaTable, FALSE otherwise
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SUPPORT FUNCTIONS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+1) assert condition : "error message" check "condition". if it isn't true, display the error message AND STOP
+2) findType(T_ID,currentST)
+find the type whose name is T_ID.strValue inside the symbole table currentST. NULL if it fails,
+the pointer to the SymbolCell* otherwise
+3) addSimpleTypeInSchemaTable(T_ID.strValue)
+adds the atomic type in the schema table. (i.e. adds the schema "BYTE" or the schema "LONG")
+4) addTypeInSymbolTable(a,b,c)
+	adds the type called "a" defined as the Schema* "b" inside the symboltable "c"
+5) addTypeToSchemaTable(a,b)
+	adds the variable Schema* a inside the schema hash table. Does nothing if it is already present. Return the pointer of the schema
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ SEMANTIC RULES @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+program					->	func_decl
+
+-----------------------------------------------------------------------------------------------
+func_decl				->	TK_FUNC TK_ID  '(' decl_list_opt ')' ':' domain type_sect_opt var_sect_opt const_sect_opt func_list_opt func_body
+
+-----------------------------------------------------------------------------------------------
+decl_list_opt			->	decl_list
+
+decl_list_opt			->
+	
+-----------------------------------------------------------------------------------------------
+decl_list1				->	decl decl_list2
+decl.currentOperation=decl_list1.currentOperation; //Inherited Attribute!
+decl_list2.currentOperation=decl_list1.currentOperation; //Inherited Attribute!
+switch (decl_list_1.currentOperation){
+case TYPE_DEFINITION: break;
+case STRUCT_DEFINITION:
+	decl.lastfield->nextRecordField=decl_list2.firstfield;
+	decl_list1.type=decl.firstfield; break;
+
+default: break;
+}
+
+decl_list				->	decl
+decl.currentOperation=decl_list.currentOperation; //Inherited Attribute!
+switch (decl_list.currentOperation){
+case TYPE_DEFINITION: break;
+case STRUCT_DEFINITION:
+	decl_list.firstfield=decl.firstfield;
+	decl_list.type=decl.firstfield; break;
+default: 
+	break;
+}
+
+-----------------------------------------------------------------------------------------------
+decl					->	id_list ':' domain
+decl.firstfield=id_list.firstfield;
+decl.lastfield=id_list.lastfield;
+id_list.type=domain.type; //Inherited Attribute!
+id_list.currentOperation=decl.currentOperation; //Inherited Attribute!
+domain.currentOperation=decl.currentOperation; //Inherited Attribute!
+
+-----------------------------------------------------------------------------------------------
+id_list1				->	TK_ID id_list2
+assert (TK_ID is not in id_list2.names) : "multiple equal IDs in the same list"
+id_list1.names= TK_ID U id_list2.names;
+switch (id_list1.currentOperation){
+	case TYPE_DEFINITION: addTypeInSymbolTable(TK_ID,id_list1.type,currentSymbolTable);break;
+	case STRUCT_DEFINITION: 
+		field=initFieldCell(TK_ID,id_list1.type);
+		field->nextRecordField=id_list2.firstfield;
+		id_list1.firstfield=field;
+		break;
+}
+id_list2.currentOperation=id_list1.currentOperation; //Inherited Attribute!
+id_list2.type=id_list1.type;//Inherited Attribute!
+
+id_list					->	TK_ID
+id_list.names={id}
+switch (id_list.currentOperation){
+	case TYPE_DEFINITION: addTypeInSymbolTable(TK_ID,id_list.type,currentSymbolTable);break;
+	case STRUCT_DEFINITION:
+		field=initFieldCell(TK_ID,id_list.type); break;
+		id_list.firstfield=field;
+		id_list.lastfield=field;	
+}
+
+-----------------------------------------------------------------------------------------------
+domain					->	atomic_domain
+domain.type=atomic_domain.type
+atomic_domain.currentOperation=domain.currentOperation; //Inherited Attribute!
+
+domain					->	struct_domain
+domain.type=struct_domain.type;
+struct_domain.currentOperation=domain.currentOperation; //Inherited Attribute!
+
+domain					->	vector_domain
+domain.type=vector_domain.type;
+vector_domain.currentOperation=domain.currentOperation; //Inherited Attribute!
+
+domain					->	T_ID
+assert (findType(T_ID,currentST)==NULL) : "type not found"
+domain.type= findType(T_ID,currentST);
+
+----------------------------------------------------------------------------------------------
+atomic_domain			->	TK_CHAR
+switch (atomic_domain.currentOperation){
+case TYPE_DEFINITION:
+case STRUCT_DEFINITION:
+	atomic_domain.type=addTypeToSchemaTable(CHAR_SCHEMA,schemaTable); break;
+}
+
+atomic_domain			->	TK_INT
+switch (atomic_domain.currentOperation){
+case TYPE_DEFINITION:
+case STRUCT_DEFINITION:
+	atomic_domain.type=addTypeToSchemaTable(INT_SCHEMA,schemaTable); break;
+}
+
+atomic_domain			->	TK_REAL
+switch (atomic_domain.currentOperation){
+case STRUCT_DEFINITION:
+case TYPE_DEFINITION: atomic_domain.type=addTypeToSchemaTable(REAL_SCHEMA,schemaTable); break;
+}
+
+atomic_domain			->	TK_STRING
+switch (atomic_domain.currentOperation){
+case STRUCT_DEFINITION:
+case TYPE_DEFINITION: atomic_domain.type=addTypeToSchemaTable(STRING_SCHEMA,schemaTable); break;
+}
+
+atomic_domain			->	TK_BOOL
+switch (atomic_domain.currentOperation){
+case STRUCT_DEFINITION:
+case TYPE_DEFINITION: atomic_domain.type=addTypeToSchemaTable(BOOL_SCHEMA,schemaTable); break;
+}
+
+-----------------------------------------------------------------------------------------------
+struct_domain			->	TK_STRUCT '(' decl_list ')'
+struct=initStructSchemaNode();
+stuct->subSchema=decl_list.type;
+switch (struct_domain.currentOperation){
+case STRUCT_DEFINITION:
+case TYPE_DEFINITION: 
+	decl_list.currentOperation=STRUCT_DEFINITION;
+	struct_domain.type=struct; break; 
+}
+
+
+
+-----------------------------------------------------------------------------------------------
+vector_domain			->	TK_VECTOR '[' TK_INTCONST  ']' TK_OF domain
+assert TK_INTCONST.intValue>=0 : "negative array length"
+array=initArraySchemaNode(TK_INTCONST);
+array->subschema=domain.type;
+vector_domain.type=array;
+
+-----------------------------------------------------------------------------------------------
+type_sect_opt			->	TK_TYPE decl_list 
+decl_list.currentOperation=TYPE_DEFINITION; //Inherited Attribute!
+
+type_sect_opt			->	
+
+-----------------------------------------------------------------------------------------------
+var_sect_opt			->	TK_VAR decl_list 
+
+var_sect_opt			->	
+
+-----------------------------------------------------------------------------------------------
+const_sect_opt			->	TK_CONST const_decl_list 
+
+const_sect_opt			->	
+
+const_decl_list			->	{const_decl}+
+
+const_decl				->	decl '=' expr ';' 
+
+func_list_opt			->	func_list 
+
+func_list_opt			->
+
+func_list				->	{func_decl}+
+
+func_body				->	TK_BEGIN TK_ID_1  stat_list TK_END TK_ID_2
+	
+
+stat_list				->	{stat}+
+
+stat					->	assign_stat
+
+stat					->	if_stat
+
+stat					->	while_stat
+
+stat					->	for_stat
+
+stat					->	foreach_stat
+
+stat					->	return_stat
+
+stat					->	read_stat
+
+stat					->	write_stat	
+
+assign_stat				->	left_hand_side '=' expr 
+
+left_hand_side			->	TK_ID 
+
+left_hand_side			->	fielding
+
+left_hand_side			->	indexing
+
+fielding				->	left_hand_side '.' TK_ID 
+
+indexing				->	left_hand_side '[' expr ']' 
+
+if_stat					->	TK_IF expr TK_THEN stat_list elsif_stat_list_opt else_stat_opt TK_ENDIF
+
+elsif_stat_list_opt		->	TK_ELSIF expr TK_THEN stat_list elsif_stat_list_opt 
+
+elfis_stat_list_opt		->	
+
+else_stat_opt			->	TK_ELSE stat_list 
+
+else_stat_opt			->
+
+while_stat				->	TK_WHILE expr TK_DO stat_list TK_ENDWHILE
+
+for_stat				->	TK_FOR TK_ID  '=' expr TK_TO expr TK_DO stat_list TK_ENDFOR
+
+foreach_stat			->	TK_FOREACH TK_ID  TK_IN expr TK_DO stat_list TK_ENDFOREACH
+
+return_stat				->	TK_RETURN expr 
+
+read_stat				->	TK_READ specifier_opt TK_ID 
+
+specifier_opt			->	'[' expr ']' 
+
+specifier_opt			->
+
+write_stat				->	TK_WRITE specifier_opt expr 
+
+expr					->	expr TK_AND expr
+
+expr					->	expr TK_OR expr
+
+expr					->	expr TK_EQUAL expr
+
+expr					->	expr TK_NOTEQUAL expr
+
+expr					->	expr '>' expr 
+
+expr					->	expr TK_GE expr 
+
+expr					->	expr '<' expr 
+
+expr					->	expr TK_LE expr 
+
+expr					->	expr TK_IN expr 
+
+expr					->	expr '+' expr 
+
+expr					->	expr '-' expr 
+
+expr					->	expr '*' expr 
+
+expr					->	expr '/' expr 
+
+expr					->	'-' expr 
+
+expr					->	TK_NOT expr 
+
+expr					->	dynamic_output 
+
+expr					->	'(' expr ')' 
+
+expr					->	left_hand_side 
+
+expr					->	atomic_const 
+
+expr					->	instance_construction 
+
+expr					->	func_call 
+
+expr					->	cond_expr 
+
+expr					->	built_in_call 
+
+expr					->	dynamic_input 
+
+atomic_const			->	TK_CHARCONST 
+
+atomic_const			->	TK_INTCONST 
+
+atomic_const			->	TK_REALCONST 
+
+atomic_const			->	TK_STRCONST 
+
+atomic_const			->	TK_BOOLCONST 
+
+struct_construction		->	TK_STRUCT '(' expr_list ')' 
+
+expr_list				->	{expr}+
+
+vector_construction		->	TK_VECTOR '(' expr_list ')' 
+
+func_call				->	TK_ID  '(' expr_list_opt ')' 
+
+expr_list_opt			->	expr_list 
+
+expr_list_opt			->	
+
+cond_expr				->	TK_IF expr TK_THEN expr elsif_expr_list_opt TK_ELSE expr TK_ENDIF
+
+elsif_expr_list_opt		->	TK_ELSIF expr TK_THEN expr elsif_expr_list_opt 
+
+built_in_call			->	toint_call 
+
+built_in_call			->	toreal_call 
+
+toint_call				->	TK_TOINT '(' expr ')' 
+
+toreal_call				->	TK_TOREAL '(' expr ')' 
+
+dynamic_input			->	TK_RD specifier_opt domain 
+
+dynamic_output			->	TK_WR specifier_opt 
+
+
+
+
+
+
+

@@ -1,0 +1,19 @@
+func progTest(a: int; progTest: string; ) : int
+	var
+		progTest:int;
+		
+	func min(a: int; progTest: int;): int
+	begin min
+		if (a < progTest) then
+			return a;
+		else
+			return progTest;
+		endif; 
+	end min
+	
+begin progTest
+	write "Insert the value of progTest variable";
+	read progTest;
+	write "progTest is equal to"
+	write progTest;
+end progTest

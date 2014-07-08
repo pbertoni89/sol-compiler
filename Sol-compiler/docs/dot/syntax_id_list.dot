@@ -1,0 +1,15 @@
+digraph {
+	rankdir="TB";
+	id_list;
+	subgraph {
+		rank="same";
+		id_1 [label="ID 1"];
+		id_2 [label="ID 2"];
+		id_p [label="ID ..."];
+		id_n [label="ID n"];
+		
+		id_1 -> id_2 -> id_p -> id_n;
+	}
+	
+	id_list -> id_1;
+}

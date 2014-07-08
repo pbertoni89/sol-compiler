@@ -1,0 +1,11 @@
+The table shows for each field of SchemaNode whether or not it is meaningful. 
+
+|-------------------|-------------------------------|---------------|---------------|---------------|---------------------------------------|
+| SCHEMANODE FIELD	| INT/STRING/REAL/CHAR/BOOLEAN	| ID			| ARRAY			| RECORD		| RECORD FIELDS							|
+|-------------------|-------------------------------|---------------|---------------|---------------|---------------------------------------|
+| TYPE				| meaningful					| meaningful	| meaningful	| meaningful	| meaningful							|
+| FIELDNAME			| not used						| not used		| not used		| not used 		| meaningful							|
+| ARRAYSIZE			| not used						| not used		| meaningful	| not used 		| meaningful only if array				|
+| SUBSCHEMA			| not used						| meaningful	| meaningful	| meaningful	| meaningful only if array/record/id	|
+| NEXTRECORDFIELD	| not used						| not used		| not used		| not used		| meaningful							|
+|-------------------|-------------------------------|---------------|---------------|---------------|---------------------------------------|

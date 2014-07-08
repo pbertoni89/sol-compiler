@@ -97,12 +97,17 @@ void freeSyntaxTree(PNode rootNode);
 /**\brief free the passed node from the memory
  *
  * Note that if the node is part of a syntax tree the function will <b>not</b> dispose of children or siblings.
- * For that purpose you can use freeTree() function.
+ * For that purpose you can use freeSyntaxTree() function.
+ * Another note: in case value field is representing a strValue, this function
+ * will <b>not</b> free it: this because since all those strings are retrieval inside
+ * the lexical Table you can free all of them <b>manually</b> y invoking freeLexStringHashTable()
+ * function.
  *
  * \pre
  *  \li node not NULL;
  * \post
  *  \li node freed;
+ *  \li ValueNode field is <b>not</b> freed;
  *
  * @param node the node to be freed
  */
@@ -252,7 +257,7 @@ PNode initIDNode(char* value);
  * 	\li dot can't compile the dot file generated
  * 	\li the dot file cannot be removed from the file system
  */
-bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool removedotfile);
+bool drawSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool removedotfile);
 
 /**\brief recursive function to compute dot abstract syntax tree
  *
@@ -277,6 +282,6 @@ bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool rem
  * 	has the number 1, while pnode->child->brother has the number 2 and so on.
  * @return the numebr of node which are (directly or indirectly) children of pnode
  */
-int parserToolComputeSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int childnumber);
+int drawSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int childnumber);
 
 #endif /* NODE_H_ */

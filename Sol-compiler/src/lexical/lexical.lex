@@ -5,6 +5,9 @@
 	/*represents the token meaning (is a char constant or a comma?)*/
 	LexVal lexVal;
 	//TODO add comments C-like
+	
+	extern char* addLexStringInHashTable(char* str);
+	void truncateQuotes();
 %}
 
 	/*Disable the default behaviour of flex: when it reads EOF normally it restart reading the input file. By adding this ilne, this behaviour is disabled*/
@@ -18,11 +21,11 @@ delimiter	[ \n\t]
 spacing		{delimiter}+
 letter		[a-zA-Z]
 digit		[0-9]
-id			{letter}({letter}|{digit})*
+id			{letter}({letter}|{digit}|_)*
 
 charconst		\'({letter}|{digit})\'
-intconst		(-)?{digit}+
-realconst		(-)?{digit}+"."{digit}+
+intconst		{digit}+
+realconst		{digit}+"."{digit}+
 strconst		\"[^\"\n]*\"
 boolconst		true|false
 
@@ -98,11 +101,16 @@ wr			{return TK_WR;}
 {charconst}	{lexVal.charValue=yytext[0]; return TK_CHARCONST;}
 {intconst}	{lexVal.intValue=atoi(yytext); return TK_INTCONST;}
 {realconst}	{lexVal.realValue=atof(yytext); return TK_REALCONST;}
-{strconst}	{lexVal.strValue=initQuotedString(yytext); return TK_STRCONST;}
+{strconst}	{truncateQuotes();lexVal.strValue=addLexStringInHashTable(yytext); return TK_STRCONST;}
 {boolconst}	{lexVal.boolValue=(yytext[0]=='t'?1:0); return TK_BOOLCONST;}
 
 	/* @@@@@@@@@@@@@@ OTHER @@@@@@@@@@@@@@@@@ */
 
-{id}		{lexVal.strValue=initString(yytext); return TK_ID;}
+{id}		{lexVal.strValue=addLexStringInHashTable(yytext); return TK_ID;}
 
 %%
+
+void truncateQuotes(){
+	yytext++;
+	yytext[strlen(yytext)-1]='\0';
+}

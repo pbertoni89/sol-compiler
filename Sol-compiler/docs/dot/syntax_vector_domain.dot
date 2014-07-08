@@ -1,0 +1,11 @@
+digraph {
+	rankdir="TB";
+	vector_domain;
+	
+	subgraph {
+		rank="same";
+		T_INTCONST -> domain;
+	}
+	
+	vector_domain -> T_INTCONST;
+}

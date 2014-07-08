@@ -1,2 +1,2 @@
-s : string;
- s = "alpha";
+exampleString : string;
+ exampleString = "alpha";

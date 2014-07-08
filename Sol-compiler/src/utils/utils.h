@@ -1,39 +1,25 @@
 /**
  *	\file utils.h
- *	\brief contains some useful functions that are used through out all the project
+ *	\brief TODO complete the documentation of utils.h
  *
- * 	\date Jun 21, 2014
+ * 	\date Jul 5, 2014
  * 	\author koldar
  *	\version 1.0
  */
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-/**\brief create a permanent copy of _string inside the memory and return the pointer to it
+/**\brief compute tha hash of the given string
  *
+ * The algorithm used to compute the hash is djb2: you can learn more about it
+ * by visiting the page http://www.cse.yorku.ca/~oz/hash.html.
  *
- * @param _string the string that will be copied inside the memory
- * @return the pointer to the newly created string in the memory
+ * This hash is used inside the lexicalTable.
+ *
+ * @param str the string which compute the hash on
+ * @return the hash
  */
-char* initString(char* _string);
+unsigned int hashString(char* str);
 
-/**\brief create a permanent copy of _string inside the memory and return the pointer to it
- *
- * The function cut off the first and the last character of the string, assuming that
- * they are \" character. This is why this function is perfect for build string constants.
- *
- * \pre
- *  \li last character is \"
- * \post
- *  \li stirng allocated in memory without first and last character.
- *
- * @param _string the string that will be copied inside the memory
- * @return the pointer to the newly created string in the memory
- */
-char* initQuotedString(char* _string);
 
 #endif /* UTILS_H_ */

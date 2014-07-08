@@ -1,0 +1,52 @@
+digraph {
+	rankdir="LR";
+	
+	mlex [label="lexical module"];
+	msyn [label="syntax module"];
+	msem [label="semantic module"];
+	ast [shape="triangle" label="Abstract Syntax Tree"];
+	tlex [label="lexical table"];
+	tsym [label="symbol table"];
+	tsch [label="schema table"];
+	
+	/*what lex module offers*/
+	mlex -> msyn [style="dashed" color="springgreen4"];
+	/*what syn module offers*/
+	msyn -> mlex [color="blue2"];
+	msyn -> ast [color="black"];
+	/*what sem module offers*/
+	
+	/*what lex table offers */
+	tlex -> mlex [style="dashed" color="springgreen4"];
+	tlex -> tsym;
+	/*what symbol table offers*/
+	/*what schema table offers*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	subgraph cluster{
+		legend [shape="none"];
+		subgraph {
+			A -> B;
+		}
+		entry11 [shape="none" label="A offers an extern resource to B"];
+		entry12 [label="" style="invis"];
+		entry11 -> entry12 [style="dashed" color="springgreen4"];
+		
+		entry21 [shape="none" label="A offers an include header necessary to B"];
+		entry22 [label="" style="invis"];
+		entry21 -> entry22 [color="blue2"];
+		
+		entry31 [shape="none" label="A generates (run time) B"];
+		entry32 [label="" style="invis"];
+		entry31 -> entry32 [color="black"];
+	}
+}

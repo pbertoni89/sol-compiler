@@ -96,17 +96,11 @@ void yyerror(const char *s);
 %error-verbose 
 %start program
 
-	/*	########################################################################
-		########################## PRECEDENCE TABLE ############################
-		########################################################################*/
-
-%left TK_AND TK_OR
-%nonassoc TK_EQUAL TK_NOTEQUAL '>' TK_GE '<' TK_LE TK_IN
-%left '+' '-'
-%left '*' '/'
-%right UMINUS
-/*for reference, see http://www.gnu.org/software/bison/manual/html_node/Contextual-Precedence.html#Contextual-Precedence*/
-
+	/*	%left TK_AND TK_OR
+		%noassoc TK_EQUAL TK_NOTEQUAL '>' TK_GE '<' TK_LE TK_IN
+		%left '+' '-'
+		%left '*' '/'
+	*/
 
 %%
 
@@ -253,35 +247,59 @@ specifier_opt			:	'[' expr ']' {$$=initNode(NT_SPECIFIER_OPT); $$->child=$2;}
 write_stat				:	TK_WRITE specifier_opt expr {$$=initNode(NT_WRITE_STAT); $$->child=$2; $2->brother=$3;}
 						;
 						
-expr					:	expr TK_AND	expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_AND); $1->brother->brother=$3;}
-						|	expr TK_OR expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_OR); $1->brother->brother=$3;}
-						|	expr TK_EQUAL expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_EQ); $1->brother->brother=$3;}
-						|	expr TK_NOTEQUAL expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_NE); $1->brother->brother=$3;}
-						|	expr '>' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_GT); $1->brother->brother=$3;}
-						|	expr TK_GE expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_GE); $1->brother->brother=$3;}
-						|	expr '<' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_LT); $1->brother->brother=$3;}
-						|	expr TK_LE expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_LE); $1->brother->brother=$3;}
-						|	expr TK_IN expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_IN); $1->brother->brother=$3;}
-						|	expr '+' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_PLUS); $1->brother->brother=$3;}
-						|	expr '-' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_MINUS); $1->brother->brother=$3;}
-						|	expr '*' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_TIMES); $1->brother->brother=$3;}
-						|	expr '/' expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=initNode(T_DIVISION); $1->brother->brother=$3;}
-						|	unary_op expr {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=$2;}
-						|	'(' expr ')' {$$=initNode(NT_EXPR); $$->child=$2;}
-						|	left_hand_side {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	atomic_const {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	instance_construction {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	func_call {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	cond_expr {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	built_in_call {$$=initNode(NT_EXPR); $$->child=$1;}
-						|	dynamic_input {$$=initNode(NT_EXPR); $$->child=$1;}
+expr					:	expr bool_op bool_term {$$=initNode(NT_EXPR); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	bool_term {$$=initNode(NT_EXPR); $$->child=$1;}
 						;
 						
-unary_op				:	'-' %prec UMINUS {$$=initNode(NT_UNARY_OP); $$->child=initNode(T_UMINUS);}
+bool_op					:	TK_AND {$$=initNode(NT_BOOL_OP); $$->child=initNode(T_AND);}
+						|	TK_OR {$$=initNode(NT_BOOL_OP); $$->child=initNode(T_OR);}
+						;
+						
+bool_term				:	rel_term rel_op rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	rel_term {$$=initNode(NT_BOOL_TERM); $$->child=$1;}
+						;
+						
+rel_op					:	TK_EQUAL {$$=initNode(NT_REL_OP); $$->child=initNode(T_EQ);}
+						|	TK_NOTEQUAL {$$=initNode(NT_REL_OP); $$->child=initNode(T_NE);}
+						|	'>' {$$=initNode(NT_REL_OP); $$->child=initNode(T_GT);}
+						|	TK_GE {$$=initNode(NT_REL_OP); $$->child=initNode(T_GE);}
+						|	'<' {$$=initNode(NT_REL_OP); $$->child=initNode(T_LT);}
+						|	TK_LE {$$=initNode(NT_REL_OP); $$->child=initNode(T_LE);}
+						|	TK_IN {$$=initNode(NT_REL_OP); $$->child=initNode(T_IN);}
+						;
+						
+rel_term				:	rel_term  low_bin_op low_term {$$=initNode(NT_REL_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	low_term {$$=initNode(NT_REL_TERM); $$->child=$1;}
+						;
+						
+low_bin_op				:	'+' {$$=initNode(NT_LOW_BIN_OP); $$->child=initNode(T_PLUS);}
+						|	'-' {$$=initNode(NT_LOW_BIN_OP); $$->child=initNode(T_MINUS);}
+						;
+						
+low_term				:	low_term high_bin_op factor {$$=initNode(NT_LOW_TERM); $$->child=$1; $1->brother=$2; $2->brother=$3;}
+						|	factor {$$=initNode(NT_LOW_TERM); $$->child=$1;}
+						;
+						
+high_bin_op				:	'*' {$$=initNode(NT_HIGH_BIN_OP); $$->child=initNode(T_TIMES);}
+						|	'/' {$$=initNode(NT_HIGH_BIN_OP); $$->child=initNode(T_DIVISION);}
+						;
+						
+factor					:	unary_op factor {$$=initNode(NT_FACTOR); $$->child=$1; $1->brother=$2;}
+						|	'(' expr ')' {$$=initNode(NT_FACTOR); $$->child=$2;}
+						|	left_hand_side {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	atomic_const {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	instance_construction {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	func_call {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	cond_expr {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	built_in_call {$$=initNode(NT_FACTOR); $$->child=$1;}
+						|	dynamic_input {$$=initNode(NT_FACTOR); $$->child=$1;}
+						;
+						
+unary_op				:	'-' {$$=initNode(NT_UNARY_OP); $$->child=initNode(T_UMINUS);}
 						|	TK_NOT {$$=initNode(NT_UNARY_OP); $$->child=initNode(T_NOT);}
 						|	dynamic_output {$$=initNode(NT_UNARY_OP); $$->child=$1;}
 						;
-
+						
 atomic_const			:	TK_CHARCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initCharNode(lexVal.charValue);}
 						|	TK_INTCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initIntNode(lexVal.intValue);}
 						|	TK_REALCONST {$$=initNode(NT_ATOMIC_CONST); $$->child=initRealNode(lexVal.realValue);}

@@ -28,10 +28,13 @@ void freeSyntaxTree(PNode rootNode){
 }
 
 void freeNode(PNode node){
-	if (node->type==T_STRCONST || node->type==T_ID){
-		//we have to free the string attached to the node
-		free(node->value.strValue);
-	}
+	//since all the strings are stored inside the lexicalTable,
+	//we don't have to free the char* string.
+	//Instead, you have to MANUALLY free them by invoking freeLexStringHashTable()
+	//		if (node->type==T_STRCONST || node->type==T_ID){
+	//			//we have to free the string attached to the node
+	//			free(node->value.strValue);
+	//		}
 	node->type=0;
 	memset(&node->value,0,sizeof(NodeValue));
 	node->child=NULL;
@@ -75,7 +78,7 @@ PNode initIDNode(char* value){
 	return result;
 }
 
-bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool removedotfile){
+bool drawSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool removedotfile){
 	char buffer[__PARSER_TOOLS_MAX_FILENAME_LENGTH];
 	sprintf(buffer,"grp/%s.dot",filename);
 	FILE* f=fopen(buffer,"w");
@@ -84,7 +87,7 @@ bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool rem
 		return false;
 	}
 	fprintf(f,"digraph %s {\n",filename);
-	parserToolComputeSyntaxNodeRecursive(f,root,0,1);
+	drawSyntaxNodeRecursive(f,root,0,1);
 	fprintf(f,"}");
 	fflush(f);
 	fclose(f);
@@ -109,7 +112,7 @@ bool buildSyntaxTreeGraph(const char* filename,PNode root,bool jpgimage,bool rem
 	return true;
 }
 
-int parserToolComputeSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int childnumber){
+int drawSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int childnumber){
 	int childNodeUsed=0;
 	int brotherNodeUsed=0;
 	if (pnode->brother!=NULL && childnumber==1){
@@ -143,14 +146,14 @@ int parserToolComputeSyntaxNodeRecursive(FILE* f,PNode pnode,int nodenumber,int 
 
 	if (pnode->brother!=NULL){
 		fprintf(f,"n%02d -> n%02d [color=blue];\n",nodenumber,nodenumber+1);
-		brotherNodeUsed=parserToolComputeSyntaxNodeRecursive(f,pnode->brother,nodenumber+1,childnumber+1);
+		brotherNodeUsed=drawSyntaxNodeRecursive(f,pnode->brother,nodenumber+1,childnumber+1);
 	}
 	if (pnode->brother==NULL && childnumber!=1){//this node has no further brother; however it is the last children a unknown parent has. So we have to close the subgraph
 		fprintf(f,"}\n");
 	}
 	if (pnode->child!=NULL){
 		fprintf(f,"n%02d -> n%02d [color=red];\n",nodenumber,nodenumber+brotherNodeUsed+1);
-		childNodeUsed=parserToolComputeSyntaxNodeRecursive(f,pnode->child,nodenumber+brotherNodeUsed+1,1);//pnode->child is the first child, so the brothernumebr is set to 1
+		childNodeUsed=drawSyntaxNodeRecursive(f,pnode->child,nodenumber+brotherNodeUsed+1,1);//pnode->child is the first child, so the brothernumebr is set to 1
 	}
 	return childNodeUsed+brotherNodeUsed+1;
 }

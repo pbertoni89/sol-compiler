@@ -1,0 +1,13 @@
+digraph {
+	rankdir="TB";
+	decl_list_opt_1;
+	decl_list_opt_2;
+	subgraph {
+		rank="same";
+		decl_list
+		dummy [style="invis"]
+	}
+	
+	decl_list_opt_1 -> decl_list;
+	decl_list_opt_2 -> dummy;
+}

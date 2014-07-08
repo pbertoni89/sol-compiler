@@ -1,0 +1,14 @@
+digraph {
+	rankdir="TB";
+	var_sect_opt1 [label="var_sect_opt"];
+	var_sect_opt2 [label="var_sect_opt"];
+	
+	subgraph {
+		rank="same";
+		decl_list;
+		dummy [style="invis"];
+	}
+	
+	var_sect_opt1 -> decl_list;
+	var_sect_opt2 -> dummy;
+}

@@ -1,0 +1,11 @@
+digraph {
+	rankdir="TB";
+	struct_domain;
+	
+	subgraph {
+		rank="same";
+		decl_list;
+	}
+	
+	struct_domain -> decl_list;
+}

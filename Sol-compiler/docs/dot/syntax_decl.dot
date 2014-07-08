@@ -1,0 +1,10 @@
+digraph {
+	rankdir="TB";
+	decl;
+	subgraph {
+		rank="same";
+		id_list -> domain;
+	}
+	
+	decl -> id_list;
+}

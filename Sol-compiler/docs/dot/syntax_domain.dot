@@ -1,0 +1,19 @@
+digraph {
+	rankdir="TB";
+	domain1 [label="domain"];
+	domain2 [label="domain"];
+	domain3 [label="domain"];
+	domain4 [label="domain"];
+	subgraph {
+		rank="same";
+		atomic_domain;
+		struct_domain;
+		vector_domain;
+		ID;
+	}
+	
+	domain1 -> atomic_domain;
+	domain2 -> struct_domain;
+	domain3 -> vector_domain;
+	domain4 -> ID;
+}

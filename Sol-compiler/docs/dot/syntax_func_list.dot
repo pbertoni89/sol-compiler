@@ -1,0 +1,15 @@
+digraph {
+	rankdir="TB";
+	func_list;
+	subgraph {
+		rank="same";
+		func_decl_1 [label="func decl 1"];
+		func_decl_2 [label="func decl 2"];
+		func_decl_p [label="func decl ..."];
+		func_decl_n [label="func decl n"];
+		
+		func_decl_1 -> func_decl_2 -> func_decl_p -> func_decl_n;
+	}
+	
+	func_list -> func_decl_1;
+}

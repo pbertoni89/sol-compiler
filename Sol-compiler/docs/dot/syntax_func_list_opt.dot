@@ -1,0 +1,14 @@
+digraph {
+	rankdir="TB";
+	func_list_opt1 [label="func_list_opt"];
+	func_list_opt2 [label="func_list_opt"];
+	
+	subgraph {
+		rank="same";
+		func_list;
+		dummy [style="invis"];
+	}
+	
+	func_list_opt1 -> func_list;
+	func_list_opt2 -> dummy;
+}
