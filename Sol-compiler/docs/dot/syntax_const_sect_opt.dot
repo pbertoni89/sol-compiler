@@ -1,11 +1,11 @@
 digraph {
 	rankdir="TB";
-	const_sect_opt1 [label="const_sect_opt"];
-	const_sect_opt2 [label="const_sect_opt"];
+	const_sect_opt1 [label="const_sect_opt" URL="\ref Sconst_sect_opt"];
+	const_sect_opt2 [label="const_sect_opt" URL="\ref Sconst_sect_opt"];
 	
 	subgraph {
 		rank="same";
-		const_decl_list;
+		const_decl_list [URL="\ref Sconst_decl_list"];
 		dummy [style="invis"];
 	}
 	

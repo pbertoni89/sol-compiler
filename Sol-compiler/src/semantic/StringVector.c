@@ -20,24 +20,26 @@ static int strsort(const void *_a, const void *_b) {
   return strcmp(a,b);
 }
 
-PStringVector newStringVector(){
-	PStringVector result;
+StringVector* newStringVector(){
+	StringVector* result;
 	utarray_new(result,&charptr_icd);
 	return result;
 }
 
-bool isStringInVector(PStringVector* vector,char* str){
-	char* result=utarray_find(*vector,str,strsort);
+void newStringVectorInMemory(StringVector* vector){
+	utarray_new(vector,&charptr_icd);
+}
+
+bool isStringInVector(StringVector* vector,char* str){
+	char* result=utarray_find(vector,str,strsort);
 	return result!=NULL;
 }
 
-void addStringVector(PStringVector* vector,char* str){
-	//TODO Eclipse editor detects an error, but make compiles just fine
-	utarray_push_back(*vector,&str);
-	utarray_sort(*vector,strsort);
+void addStringVector(StringVector* vector,char* str){
+	utarray_push_back(vector,&str);
+	utarray_sort(vector,strsort);
 }
 
-void freeStringVector(PStringVector* vector){
-	//TODO Eclipse editor detects an error, but make compiles just fine
-	utarray_free(*vector);
+void freeStringVector(StringVector* vector){
+	utarray_free(vector);
 }

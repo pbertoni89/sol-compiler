@@ -72,6 +72,7 @@ void addTypeInSymbolTable(char* name,SchemaNode* pschema, PSymbolTable* symbolTa
 
 SymbolCell* findType(char* name,PSymbolTable* symbolTable){
 	SymbolCell* result;
+	//FIXME fare in modo di fare l'hash con il SymbolType, non con solo il name!
 	int key=hashString(name);
 	HASH_FIND_INT(*symbolTable,&key,result);
 	return result;

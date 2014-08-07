@@ -3,10 +3,10 @@ digraph {
 	decl_list;
 	subgraph {
 		rank="same";
-		decl_1 [label="decl 1"];
-		decl_2 [label="decl 2"];
-		decl_p [label="decl ..."];
-		decl_n [label="decl n"];
+		decl_1 [label="decl 1" URL="\ref Sdecl"];
+		decl_2 [label="decl 2" URL="\ref Sdecl"];
+		decl_p [label="decl ..." URL="\ref Sdecl"];
+		decl_n [label="decl n" URL="\ref Sdecl"];
 		
 		decl_1 -> decl_2 -> decl_p -> decl_n;
 	}

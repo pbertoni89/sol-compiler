@@ -2,8 +2,41 @@
 
 //INTERNAL GLOBAL VARIABLES
 static PSchemaTable schemaTable=NULL;
+static SchemaNode* primitiveTypes[5];
 
 //FUNCTIONS
+
+void initSchemaTable(){
+
+	SchemaCell* stub;
+	int i;
+	SchemaNode addPrimitiveTypes[]={
+			{SCHEMA_INT,NULL,0,NULL,NULL},
+			{SCHEMA_REAL,NULL,0,NULL,NULL},
+			{SCHEMA_CHAR,NULL,0,NULL,NULL},
+			{SCHEMA_STRING,NULL,0,NULL,NULL},
+			{SCHEMA_BOOLEAN,NULL,0,NULL,NULL},
+	};
+
+	for (i=0;i<5;i++){
+		int key=hashSchema(&(addPrimitiveTypes[i]));
+		stub=(SchemaCell*)malloc(sizeof(SchemaCell));
+		if (stub==NULL){
+			fprintf(stderr,"initSchemaTable malloc failed\n");
+			exit(EXIT_FAILURE);
+		}
+		stub->key=key;
+		stub->node=addPrimitiveTypes[i];
+		//adds primitive type in hashtable
+		HASH_ADD_INT(schemaTable,key,stub);
+		//update cache table primitivesType
+		primitiveTypes[i]=&(stub->node);
+	}
+}
+
+SchemaNode* getPrimitiveType(SchemaType type){
+	return primitiveTypes[type];
+}
 
 void addSimpleTypeInSchemaTable(char* name){
 	SchemaCell* add;
@@ -21,6 +54,7 @@ void addSimpleTypeInSchemaTable(char* name){
 	add->node.type=SCHEMA_SIMPLE;
 	add->node.fieldName=name;
 	add->node.arraySize=0;
+	//FIXME add ID sub schema
 	add->node.subSchema=NULL;
 	add->node.nextRecordField=NULL;
 
@@ -39,7 +73,7 @@ void freeSchemaTable(){
 	}
 }
 
-bool buildSchemaTableGraph(const char* filename,PSchemaTable* root,bool jpgimage,bool removedotfile){
+bool buildSchemaTableGraph(const char* filename,bool jpgimage,bool removedotfile){
 	char buffer[__SCHEMATABLE_MAX_FILENAME_LENGTH];
 	sprintf(buffer,"grp/%s.dot",filename);
 	FILE* f=fopen(buffer,"w");
@@ -50,7 +84,7 @@ bool buildSchemaTableGraph(const char* filename,PSchemaTable* root,bool jpgimage
 	fprintf(f,"digraph %s {\n",filename);
 	SchemaCell* current;
 	int nodenumber=0;
-	for (current=root;current!=NULL; current=(SchemaCell*)current->hh.next){
+	for (current=schemaTable;current!=NULL; current=(SchemaCell*)current->hh.next){
 		nodenumber=drawSchemaTableRecursive(f,&(current->node),nodenumber);
 	}
 	fprintf(f,"}");
@@ -102,7 +136,7 @@ int drawSchemaTableRecursive(FILE* f,SchemaNode* schemaCell,int nodenumber){
 	case SCHEMA_SIMPLE:
 		fprintf(f,"\\n%s\" style=\"filled\" fillcolor=\"yellow\"];\n",schemaCell->fieldName);
 		break;
-	case SCHEMA_RECORD:
+	case SCHEMA_STRUCT:
 		fprintf(f,"\"];\n");
 		fprintf(f,"{\n");
 		fprintf(f,"rank=same;\n");
@@ -118,7 +152,7 @@ int drawSchemaTableRecursive(FILE* f,SchemaNode* schemaCell,int nodenumber){
 		fprintf(f,"}\n");
 		return newnode;
 		break;
-	case SCHEMA_ARRAY:
+	case SCHEMA_VECTOR:
 		fprintf(f,"\\n%d\"];\n",schemaCell->arraySize);
 		fprintf(f,"{\n");
 		fprintf(f,"rank=same;\n");

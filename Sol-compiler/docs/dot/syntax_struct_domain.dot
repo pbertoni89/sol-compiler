@@ -4,7 +4,7 @@ digraph {
 	
 	subgraph {
 		rank="same";
-		decl_list;
+		decl_list [URL="\ref Sdecl_list"];
 	}
 	
 	struct_domain -> decl_list;

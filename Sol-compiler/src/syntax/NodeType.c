@@ -70,10 +70,10 @@ void printNodeType(FILE* f,NodeType nodetype){
 	case T_CHARCONST: fprintf(f,"CHARCONST"); break;
 	case T_BOOLCONST: fprintf(f,"BOOLCONST"); break;
 	case T_INTTYPE: fprintf(f,"INTTYPE"); break;
-	case T_STRTYPE: fprintf(f,"STRTYPE"); break;
+	case T_STRINGTYPE: fprintf(f,"STRTYPE"); break;
 	case T_REALTYPE: fprintf(f,"REALTYPE"); break;
 	case T_CHARTYPE: fprintf(f,"CHARTYPE"); break;
-	case T_BOOLTYPE: fprintf(f,"BOOLTYPE"); break;
+	case T_BOOLEANTYPE: fprintf(f,"BOOLTYPE"); break;
 	case T_AND: fprintf(f,"AND"); break;
 	case T_OR: fprintf(f,"OR"); break;
 	case T_NOT: fprintf(f,"NOT"); break;
@@ -101,10 +101,10 @@ bool isTerminal(NodeType nodetype){
 	case T_CHARCONST:
 	case T_BOOLCONST:
 	case T_INTTYPE:
-	case T_STRTYPE:
+	case T_STRINGTYPE:
 	case T_REALTYPE:
 	case T_CHARTYPE:
-	case T_BOOLTYPE:
+	case T_BOOLEANTYPE:
 	case T_AND:
 	case T_OR:
 	case T_NOT:

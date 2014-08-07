@@ -3,6 +3,14 @@ digraph {
 	func_decl;
 	subgraph {
 		rank="same";
+		decl_list_opt [URL="\ref Sdecl_list_opt"];
+		domain [URL="\ref Sdomain"];
+		type_sect_opt [URL="\ref Stype_sect_opt"];
+		var_sect_opt [URL="\ref Svar_sect_opt"];
+		const_sect_opt [URL="\ref Sconst_sect_opt"];
+		func_list_opt [URL="\ref Sfunc_list_opt"];
+		func_body [URL="\ref Sfunc_body"];
+		
 		T_ID ->
 		decl_list_opt ->
 		domain ->

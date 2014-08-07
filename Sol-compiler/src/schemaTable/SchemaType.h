@@ -16,16 +16,24 @@
 typedef enum SchemaType{
 	SCHEMA_INT,
 	SCHEMA_REAL,
+	SCHEMA_CHAR,
 	SCHEMA_STRING,
 	SCHEMA_BOOLEAN,
-	SCHEMA_CHAR,
 	SCHEMA_SIMPLE,
-	SCHEMA_RECORD,
-	SCHEMA_ARRAY
+	SCHEMA_STRUCT,
+	SCHEMA_VECTOR
 } SchemaType;
 
+void storeSchemaType(const char* buffer, SchemaType schematype);
 
-//TODO documentation
+/**\brief return a string representation of the schema type
+ *
+ * \pre
+ * 	\li f open on write mode
+ *
+ * @param f the file to write the string representation on
+ * @param schemaType the schematype to print out
+ */
 void printSchemaType(FILE* f,SchemaType schemaType);
 
 /**\brief TRUE if the schema represents a simple type

@@ -4,6 +4,7 @@ digraph {
 	
 	subgraph {
 		rank="same";
+		domain [URL="\ref Sdomain"];
 		T_INTCONST -> domain;
 	}
 	

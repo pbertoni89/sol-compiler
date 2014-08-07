@@ -95,10 +95,10 @@ typedef enum {
 	T_BOOLCONST,
 	//type are used in nodes representing a variable/constant type
 	T_INTTYPE,
-	T_STRTYPE,
+	T_STRINGTYPE,
 	T_REALTYPE,
 	T_CHARTYPE,
-	T_BOOLTYPE,
+	T_BOOLEANTYPE,
 	//operations: a series of operations that can be use inside and expression
 	T_AND,
 	T_OR,

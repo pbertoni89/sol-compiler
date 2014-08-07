@@ -1,14 +1,15 @@
 digraph {
 	rankdir="TB";
-	const_sect_opt1 [label="const_sect_opt"];
-	const_sect_opt2 [label="const_sect_opt"];
-	
+	const_decl_list [URL="\ref Sconst_decl_list"];
 	subgraph {
 		rank="same";
-		const_decl_list;
-		dummy [style="invis"];
+		const_decl_1 [label="const decl 1" URL="\ref Sconst_decl"];
+		const_decl_2 [label="const decl 2" URL="\ref Sconst_decl"];
+		const_decl_p [label="const decl ..." URL="\ref Sconst_decl"];
+		const_decl_n [label="const decl n" URL="\ref Sconst_decl"];
+		
+		const_decl_1 -> const_decl_2 -> const_decl_p -> const_decl_n;
 	}
 	
-	type_sect_opt1 -> const_decl_list;
-	type_sect_opt2 -> dummy;
+	const_decl_list -> const_decl_1;
 }

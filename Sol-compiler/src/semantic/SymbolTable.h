@@ -95,15 +95,32 @@ typedef struct SymbolCell {
 	UT_hash_handle hh;
 } SymbolCell;
 
+
 typedef SymbolCell* PSymbolTable;
 
 //extern PSymbolTable symbolTable;
 
+/**\brief Adds a symbol representing a variable inside a symbol table
+ *
+ * @param name
+ * @param symbolTable
+ */
 void addVariableInSymbolTable(char* name,PSymbolTable* symbolTable);
 
+/**\brief Adds a symbol representing a constant inside a symbol table
+ *
+ * @param name
+ * @param symbolTable
+ */
 void addConstantInSymbolTable(char* name,PSymbolTable* symbolTable);
 
-void addTypeInSymbolTable(char* name,SchemaCell* pschema, PSymbolTable* symbolTable);
+/**\brief Adds a symbol representing a type inside a symbol table
+ *
+ * @param name
+ * @param pschema
+ * @param symbolTable
+ */
+void addTypeInSymbolTable(char* name,SchemaNode* pschema, PSymbolTable* symbolTable);
 
 SymbolCell* findType(char* name,PSymbolTable* symbolTable);
 

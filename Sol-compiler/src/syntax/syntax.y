@@ -148,8 +148,8 @@ domain					:	atomic_domain {$$=initNode(NT_DOMAIN); $$->child=$1;}
 atomic_domain			:	TK_CHAR {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_CHARTYPE);}
 						|	TK_INT {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_INTTYPE);}
 						|	TK_REAL {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_REALTYPE);}
-						|	TK_STRING {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_STRTYPE);}
-						|	TK_BOOL {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_BOOLTYPE);}
+						|	TK_STRING {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_STRINGTYPE);}
+						|	TK_BOOL {$$=initNode(NT_ATOMIC_DOMAIN); $$->child=initNode(T_BOOLEANTYPE);}
 						;
 						
 struct_domain			:	TK_STRUCT '(' decl_list ')' { $$=initNode(NT_STRUCT_DOMAIN); $$->child=initNode(NT_DECL_LIST); $$->child->child=$3;}

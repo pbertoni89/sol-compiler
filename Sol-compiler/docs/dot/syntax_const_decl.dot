@@ -1,15 +1,12 @@
 digraph {
 	rankdir="TB";
-	const_decl_list;
+	const_decl [URL="\ref Sconst_decl"];
 	subgraph {
 		rank="same";
-		const_decl_1 [label="const_decl 1"];
-		const_decl_2 [label="const_decl 2"];
-		const_decl_p [label="const_decl ..."];
-		const_decl_n [label="const_decl n"];
-		
-		const_decl_1 -> const_decl_2 -> const_decl_p -> const_decl_n;
+		decl [URL="\ref Sdecl"];
+		expr [URL="\ref Sexpr"];
+		decl -> expr;
 	}
 	
-	const_decl_list -> const_decl_1;
+	const_decl -> decl;
 }

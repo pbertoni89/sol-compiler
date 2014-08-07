@@ -3,6 +3,8 @@ digraph {
 	decl;
 	subgraph {
 		rank="same";
+		id_list [URL="\ref Sid_list"];
+		domain [URL="\ref Sdomain"];
 		id_list -> domain;
 	}
 	

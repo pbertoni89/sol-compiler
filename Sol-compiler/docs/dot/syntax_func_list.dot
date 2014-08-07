@@ -3,10 +3,10 @@ digraph {
 	func_list;
 	subgraph {
 		rank="same";
-		func_decl_1 [label="func decl 1"];
-		func_decl_2 [label="func decl 2"];
-		func_decl_p [label="func decl ..."];
-		func_decl_n [label="func decl n"];
+		func_decl_1 [label="func decl 1" URL="\ref Sfunc_decl"];
+		func_decl_2 [label="func decl 2" URL="\ref Sfunc_decl"];
+		func_decl_p [label="func decl ..." URL="\ref Sfunc_decl"];
+		func_decl_n [label="func decl n" URL="\ref Sfunc_decl"];
 		
 		func_decl_1 -> func_decl_2 -> func_decl_p -> func_decl_n;
 	}

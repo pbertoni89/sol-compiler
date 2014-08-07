@@ -1,14 +1,14 @@
 digraph {
 	rankdir="TB";
-	domain1 [label="domain"];
-	domain2 [label="domain"];
-	domain3 [label="domain"];
-	domain4 [label="domain"];
+	domain1 [label="domain" URL="\ref Sdomain"];
+	domain2 [label="domain" URL="\ref Sdomain"];
+	domain3 [label="domain" URL="\ref Sdomain"];
+	domain4 [label="domain" URL="\ref Sdomain"];
 	subgraph {
 		rank="same";
-		atomic_domain;
-		struct_domain;
-		vector_domain;
+		atomic_domain [URL="\ref Satomic_domain"];
+		struct_domain [URL="\ref Sstruct_domain"];
+		vector_domain [URL="\ref Svector_domain"];
 		ID;
 	}
 	

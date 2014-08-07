@@ -5,7 +5,7 @@ digraph {
 	
 	subgraph {
 		rank="same";
-		func_list;
+		func_list [URL="\ref Sfunc_list"];
 		dummy [style="invis"];
 	}
 	

@@ -1,6 +1,6 @@
 digraph {
 	rank="TB";
 	program [label="program\n(AKA root)"];
-	func_decl;
+	func_decl [URL="\ref Sfunc_decl"];
 	program -> func_decl;
 }

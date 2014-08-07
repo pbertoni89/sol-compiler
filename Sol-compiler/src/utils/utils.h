@@ -21,5 +21,4 @@
  */
 unsigned int hashString(char* str);
 
-
 #endif /* UTILS_H_ */
