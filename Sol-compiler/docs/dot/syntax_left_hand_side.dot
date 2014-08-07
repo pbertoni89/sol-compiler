@@ -1,0 +1,17 @@
+digraph {
+	rankdir="TB";
+	left_hand_side1 [label="left hand side"];
+	left_hand_side2 [label="left hand side"];
+	left_hand_side3 [label="left hand side"];
+	
+	subgraph {
+		rank="same";
+		T_ID;
+		fielding [URL="\ref Sfielding"];
+		indexing [URL="\ref Sindexing"];
+	}
+	
+	left_hand_side1 -> T_ID;
+	left_hand_side2 -> fielding;
+	left_hand_side3 -> indexing;
+}

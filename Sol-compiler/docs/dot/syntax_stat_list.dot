@@ -1,0 +1,15 @@
+digraph {
+	rankdir="TB";
+	stat_list;
+	subgraph {
+		rank="same";
+		stat_1 [label="stat 1" URL="\ref Sstat"];
+		stat_2 [label="stat 2" URL="\ref Sstat"];
+		stat_p [label="stat ..." URL="\ref Sstat"];
+		stat_n [label="stat n" URL="\ref Sstat"];
+		
+		stat_1 -> stat_2 -> stat_p -> stat_n;
+	}
+	
+	stat_list -> stat_1;
+}

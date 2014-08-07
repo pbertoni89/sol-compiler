@@ -1,0 +1,18 @@
+digraph {
+	rankdir="TB";
+	struct [label="type=\"SCHEMA_STRUCT\""];
+	
+	subgraph a {
+		rank="same";
+		a [label="type=\"SCHEMA_STRING\"\nfield name=\"a\""];
+		b [label="type=\"SCHEMA_ARRAY\"\nfield name=\"b\"\nsize=\"4\""];
+		c [label="type=\"SCHEMA_REAL\"\nfield name=\"c\""];
+		d [label="type=\"SCHEMA_INT\"\nfield name=\"d\""];
+	}
+
+	struct -> a;
+	a->b->c->d;
+
+	e [label="type=\"SCHEMA_INT\""];	
+	c->e;
+}

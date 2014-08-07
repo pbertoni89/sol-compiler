@@ -1,0 +1,15 @@
+digraph {
+	rankdir="TB";
+	func_body;
+	subgraph {
+		rank="same";
+		T_ID1 [style="bold" label="T_ID"]
+		T_ID2 [style="bold" label="T_ID"];
+		
+		stat_list [URL="\ref Sstat_list"];
+		
+		T_ID1 -> stat_list -> T_ID2;
+	}
+	
+	func_body -> T_ID1;
+}

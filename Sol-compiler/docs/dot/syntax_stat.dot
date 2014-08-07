@@ -1,0 +1,32 @@
+digraph {
+	rankdir="TB";
+	stat1 [label="stat"];
+	stat2 [label="stat"];
+	stat3 [label="stat"];
+	stat4 [label="stat"];
+	stat5 [label="stat"];
+	stat6 [label="stat"];
+	stat7 [label="stat"];
+	stat8 [label="stat"];
+	
+	subgraph {
+		rank="same";
+		assign_stat [URL="\ref Sassign_stat"];
+		if_stat [URL="\ref Sif_stat"];
+		while_stat [URL="\ref Swhile_stat"];
+		for_stat [URL="\ref Sdfor_stat"];
+		foreach_stat [URL="\ref Sforeach_stat"];
+		return_stat [URL="\ref Sreturn_stat"];
+		read_stat [URL="\ref Sread_stat"];
+		write_stat [URL="\ref Swrite_stat"];
+	}
+	
+	stat1 -> assign_stat;
+	stat2 -> if_stat;
+	stat3 -> while_stat;
+	stat4 -> for_stat;
+	stat5 -> foreach_stat;
+	stat6 -> return_stat;
+	stat7 -> read_stat;
+	stat8 -> write_stat;
+}

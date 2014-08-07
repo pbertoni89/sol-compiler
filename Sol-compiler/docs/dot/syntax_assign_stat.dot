@@ -1,0 +1,12 @@
+digraph {
+	rankdir="TB";
+	assign_stat [URL="\ref Sassign_stat"];
+	subgraph {
+		rank="same";
+		left_hand_side [URL="\ref Sleft_hand_side"];
+		expr [URL="\ref Sexpr"];
+		left_hand_side -> expr;
+	}
+	
+	assign_stat -> left_hand_side;
+}

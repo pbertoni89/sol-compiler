@@ -1,0 +1,15 @@
+digraph {
+	node [shape=record];	
+	struct_type[label="SCHEMA_STRUCT|NULL|0|<p1>|NULL"];
+
+	a [label="<f0>type|field name| array size| sub-schema|<f1>next field record"];
+	b [label="<f0>type|field name| array size| sub-schema|<f1>next field record"];
+	c [label="<f0>type|field name| array size| sub-schema|<f1>next field record"];
+	d [label="<f0>type|field name| array size| sub-schema|<f1>next field record"];
+
+	struct_type:p1 -> a;
+	a:f1 -> b:f0;
+	b:f1 -> c:f0;
+	c:f1 -> d:f0;
+	
+}
